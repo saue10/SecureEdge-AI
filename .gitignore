@@ -31,9 +31,11 @@ venv/
 env/
 ENV/
 
-# PyTorch / Large Checkpoints (keep lightweight & exported models needed for reproducibility, ignore multi-GB raw caches)
+# PyTorch / Large Checkpoints (>100MB GitHub limit — regenerate locally via scripts/export_llama_executorch.py)
 *.bin
 *.gguf
+models/llama_executorch/smollm2_135m_cyber_advisor.pte
+models/llama_executorch/smollm2_135m_cyber_advisor.pt2
 models/cache/
 data/raw/large_archives/
 

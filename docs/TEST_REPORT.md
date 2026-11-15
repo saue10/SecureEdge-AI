@@ -1,7 +1,8 @@
 # SecureEdge AI — Quality Assurance, Unit & Integration Test Report
 
 **Project:** SecureEdge AI (Bharat AI-SoC Challenge 2026–27 | PS3)  
-**Test Framework:** Python `unittest` (`tests/unit/` and `tests/integration/`)  
+**Framework:** Python `unittest` (`tests/unit/` and `tests/integration/`)  
+**Latest Verified Run:** 16 tests passed in `317.241s` (`OK`, 0 failures, 0 skipped) using `HuggingFaceTB/SmolLM2-135M-Instruct` (`smollm2_135m_cyber_advisor.pte`)  
 **Execution Command:** `python -m unittest discover -s tests -p "test_*.py" -v`
 
 ---

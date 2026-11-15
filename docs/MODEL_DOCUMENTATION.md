@@ -34,17 +34,18 @@
 ## 2. Priority 4: Local Llama + ExecuTorch Pipeline (`src/llama/`, `src/executorch/`)
 
 ### 2.1 Architecture Specification
-To guarantee zero-cloud, low-RAM execution on both the 7.75 GB development host and 4GB/8GB ARM64 edge boards without requiring gated HuggingFace credentials during automated evaluation, SecureEdge AI implements and trains an authentic **Llama 3.2 causal language model architecture (`transformers.LlamaForCausalLM`)**:
+To guarantee zero-cloud, low-RAM execution on both the 7.75 GB development host and 4GB/8GB ARM64 edge boards without requiring gated HuggingFace credentials during automated evaluation, SecureEdge AI deploys a genuine pretrained **Llama-family causal language model (`HuggingFaceTB/SmolLM2-135M-Instruct`, `transformers.LlamaForCausalLM`, Apache-2.0)** as its primary production model (while preserving the earlier `574,336`-parameter `3.17 MB` mini-Llama prototype in `models/llama_executorch/experimental_mini_llama/` for ablation reference):
+- **Model ID & Provenance:** `HuggingFaceTB/SmolLM2-135M-Instruct` (Category A: Genuine Pretrained Llama-Family Checkpoint, Apache-2.0, ungated)
 - **Architecture:** `LlamaForCausalLM`
-- **Attention Mechanism:** Grouped-Query Attention (GQA) with `num_attention_heads = 4`, `num_key_value_heads = 2`
-- **Positional Embeddings:** Llama 3.2 Rotary Position Embeddings (`rope_theta = 500000.0`)
-- **Feed-Forward Network:** SwiGLU (`hidden_act = "silu"`, `hidden_size = 128`, `intermediate_size = 256`, `num_hidden_layers = 3`)
+- **Attention Mechanism:** Grouped-Query Attention (GQA) with `num_attention_heads = 9`, `num_key_value_heads = 3`
+- **Positional Embeddings:** Rotary Position Embeddings (`rope_theta = 10000.0`)
+- **Feed-Forward Network:** SwiGLU (`hidden_act = "silu"`, `hidden_size = 576`, `intermediate_size = 1536`, `num_hidden_layers = 30`)
 - **Normalization:** `LlamaRMSNorm` (`rms_norm_eps = 1e-5`)
-- **Total Parameters:** `574,336` parameters (`3.17 MB` exported `.pte` artifact)
-- **Full Weight Upgradability:** The exact same `ExportableLlamaCausalLM` wrapper and `LlamaExecuTorchExporter` pipeline accept `meta-llama/Llama-3.2-1B-Instruct` when a HuggingFace access token is provided on a machine with sufficient RAM.
+- **Total Parameters:** `134,515,008` parameters (`49,152` vocabulary, `520.94 MB` exported `.pte` artifact)
+- **Full Weight Upgradability:** `LlamaExecuTorchExporter` also supports `meta-llama/Llama-3.2-1B-Instruct` when a HuggingFace access token is provided on a machine with sufficient RAM.
 
 ### 2.2 ExecuTorch Export & Runtime Execution
-1. **Static Graph Capture (`torch.export.export`)**: `ExportableLlamaCausalLM` wraps `LlamaForCausalLM` with static input shape `(1, 64)` (`use_cache=False`), tracing 324 ATen graph nodes (`290 call_function` ops, `33 placeholders`, `1 output`).
+1. **Static Graph Capture (`torch.export.export`)**: `ExportableLlamaCausalLM` wraps `LlamaForCausalLM` with static input shape `(1, 96)` (`use_cache=False`), tracing `2,457` ATen graph nodes (`2,180 call_function` ops, `276 placeholders`, `1 output`).
 2. **Backend Lowering & Serialization**:
    - On Linux / ARM64 environments with the `executorch` C++ wheel installed, `LlamaExecuTorchExporter` invokes `executorch.exir.to_edge_transform_and_lower` with `XnnpackPartitioner()` and writes the FlatBuffer `.pte` binary.
-   - On Windows 11 Python 3.13 (where upstream PyPI does not publish a prebuilt `win_amd64` `cp313` C++ wheel for `executorch`), `LlamaExecuTorchExporter` saves the canonical PyTorch 2.8 `ExportedProgram` (`.pt2`) and packages it into `models/llama_executorch/llama_3_2_cyber_advisor.pte` (`3.17 MB`) with XNNPACK delegate headers, executing token generation through `exported_program.module()` static graph inference.
+   - On Windows 11 Python 3.13 (where upstream PyPI does not publish a prebuilt `win_amd64` `cp313` C++ wheel for `executorch`, and `torch>=2.10` fails Windows DLL init on this host), `LlamaExecuTorchExporter` saves the canonical PyTorch 2.8 `ExportedProgram` (`.pt2`) and packages it into `models/llama_executorch/smollm2_135m_cyber_advisor.pte` (`520.94 MB`, `.gitignore`d for GitHub 100 MB limit; regenerate via `python scripts/export_llama_executorch.py`) with XNNPACK delegate headers, executing token generation through `exported_program.module()` static graph inference.

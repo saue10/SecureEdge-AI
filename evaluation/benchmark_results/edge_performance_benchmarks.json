@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-11-15T08:46:52Z",
+  "timestamp": "2026-11-15T09:21:53Z",
   "measured_hardware_environment": {
     "platform": "amd64-Windows",
     "os_release": "Windows-11-10.0.26200-SP0",
@@ -7,8 +7,18 @@
     "physical_cores": 4,
     "logical_cores": 8,
     "total_ram_gb": 7.75,
+    "python_version": "3.13.2",
+    "pytorch_version": "2.8.0+cpu",
     "is_arm_hardware": false,
     "measurement_category": "x86_64 Host Measured (ARM64 Target Pending Physical Board)",
+    "warmup_runs": {
+      "detectors": 5,
+      "llama_e2e": 1
+    },
+    "measured_runs": {
+      "detectors": 50,
+      "llama_e2e": 5
+    },
     "power_consumption_watts": "Not Measured (Requires external USB-C hardware power meter on target board)"
   },
   "arm_edge_deployment_readiness": {
@@ -20,56 +30,58 @@
     "executorch_pte_verified": {
       "verified": true,
       "format": "ExecuTorch-Portable-ExportedProgram-Container",
-      "size_bytes": 3318416,
-      "size_mb": 3.165,
+      "model_id": "HuggingFaceTB/SmolLM2-135M-Instruct",
+      "size_bytes": 546248225,
+      "size_mb": 520.943,
       "header": {
         "format": "ExecuTorch-Portable-ExportedProgram-Container",
-        "schema_version": "1.0",
+        "schema_version": "1.1",
+        "model_id": "HuggingFaceTB/SmolLM2-135M-Instruct",
         "model_type": "llama",
-        "seq_len": 64,
-        "vocab_size": 512,
-        "hidden_size": 128,
-        "num_hidden_layers": 3,
-        "num_attention_heads": 4,
-        "num_key_value_heads": 2,
+        "seq_len": 96,
+        "vocab_size": 49152,
+        "hidden_size": 576,
+        "num_hidden_layers": 30,
+        "num_attention_heads": 9,
+        "num_key_value_heads": 3,
         "target_delegate": "XNNPACK"
       }
     },
-    "total_models_footprint_mb": 4.013,
+    "total_models_footprint_mb": 521.791,
     "offline_operation_verified": true
   },
   "component_benchmarks": {
     "url_detector": {
-      "mean_latency_ms": 30.047,
-      "p95_latency_ms": 38.777,
-      "throughput_items_per_sec": 33.3,
+      "mean_latency_ms": 49.135,
+      "p95_latency_ms": 74.058,
+      "throughput_items_per_sec": 20.4,
       "model_size_kb": 262.37
     },
     "sms_detector": {
-      "mean_latency_ms": 3.31,
-      "p95_latency_ms": 4.998,
-      "throughput_items_per_sec": 302.1,
-      "model_size_kb": 64.18
+      "mean_latency_ms": 5.461,
+      "p95_latency_ms": 10.014,
+      "throughput_items_per_sec": 183.1,
+      "model_size_kb": 64.17
     },
     "network_detector": {
-      "mean_latency_ms": 31.464,
-      "p95_latency_ms": 36.618,
-      "throughput_items_per_sec": 31.8,
+      "mean_latency_ms": 43.71,
+      "p95_latency_ms": 52.598,
+      "throughput_items_per_sec": 22.9,
       "model_size_kb": 542.31
     },
     "llama_executorch": {
-      "runtime_backend": "ExecuTorch-ExportedProgram-Graph (amd64-Windows)",
-      "mean_latency_ms": 103.627,
-      "p95_latency_ms": 163.935,
-      "throughput_advisories_per_sec": 9.65,
-      "model_size_kb": 3240.64
+      "runtime_backend": "torch.export.ExportedProgram (HuggingFaceTB/SmolLM2-135M-Instruct | amd64-Windows)",
+      "mean_latency_ms": 4970.678,
+      "p95_latency_ms": 6913.782,
+      "throughput_advisories_per_sec": 0.2,
+      "model_size_kb": 533445.53
     },
     "end_to_end_pipeline": {
-      "mean_latency_ms": 144.973,
-      "p95_latency_ms": 209.838,
-      "process_rss_memory_mb": 477.87,
-      "inference_rss_delta_mb": 0.281,
-      "cpu_utilization_pct": 72.9
+      "mean_latency_ms": 5013.835,
+      "p95_latency_ms": 6969.337,
+      "process_rss_memory_mb": 599.19,
+      "inference_rss_delta_mb": 0.0,
+      "cpu_utilization_pct": 100.0
     }
   },
   "generated_figures": [

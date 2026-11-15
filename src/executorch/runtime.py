@@ -21,11 +21,11 @@ class ExecuTorchLlamaRuntime:
     """
     Executes local Llama causal inference using the exported ExecuTorch (.pte / .pt2) static graph.
     Supports native C++ executorch.runtime on ARM64/Linux and torch.export.ExportedProgram static
-    graph execution on Windows Python 3.13 hosts.
+    graph execution on Windows hosts where torch>=2.10 VC++ dependencies are unavailable.
     """
 
-    DEFAULT_PTE_PATH = LLAMA_MODEL_DIR / "llama_3_2_cyber_advisor.pte"
-    DEFAULT_PT2_PATH = LLAMA_MODEL_DIR / "llama_3_2_cyber_advisor.pt2"
+    DEFAULT_PTE_PATH = LLAMA_MODEL_DIR / "smollm2_135m_cyber_advisor.pte"
+    DEFAULT_PT2_PATH = LLAMA_MODEL_DIR / "smollm2_135m_cyber_advisor.pt2"
     DEFAULT_META_PATH = LLAMA_MODEL_DIR / "export_metadata.json"
 
     def __init__(
@@ -42,7 +42,7 @@ class ExecuTorchLlamaRuntime:
         self.compiled_module: Any = None
         self.native_et_program: Any = None
         self.metadata: Dict[str, Any] = {}
-        self.seq_len: int = 64
+        self.seq_len: int = 96
         self.runtime_backend: str = "Uninitialized"
         self.is_loaded: bool = False
         self.load()
@@ -64,15 +64,16 @@ class ExecuTorchLlamaRuntime:
                 return {
                     "verified": True,
                     "format": hdr_json.get("format", "ExecuTorch-PTE"),
+                    "model_id": hdr_json.get("model_id", self.metadata.get("model_id", "LlamaForCausalLM")),
                     "size_bytes": size_bytes,
                     "size_mb": round(size_bytes / (1024 * 1024), 3),
                     "header": hdr_json,
                 }
-            # Native FlatBuffer .pte starts with 4-byte root offset followed by "ET12" magic at offset 4
             if b"ET" in head:
                 return {
                     "verified": True,
                     "format": "ExecuTorch-Native-FlatBuffer-PTE",
+                    "model_id": self.metadata.get("model_id", "LlamaForCausalLM"),
                     "size_bytes": size_bytes,
                     "size_mb": round(size_bytes / (1024 * 1024), 3),
                 }
@@ -84,7 +85,7 @@ class ExecuTorchLlamaRuntime:
         if self.meta_path.exists():
             try:
                 self.metadata = json.loads(self.meta_path.read_text(encoding="utf-8"))
-                self.seq_len = int(self.metadata.get("max_seq_len", 64))
+                self.seq_len = int(self.metadata.get("max_seq_len", 96))
             except Exception:
                 self.metadata = {}
 
@@ -93,7 +94,7 @@ class ExecuTorchLlamaRuntime:
             self.runtime_backend = "Artifact-Missing"
             return False
 
-        # 1. Try native ExecuTorch C++ pybindings if installed (e.g. on Linux / ARM64)
+        # 1. Try native ExecuTorch C++ pybindings if installed & loadable (Linux / ARM64)
         try:
             from executorch.runtime import Runtime  # type: ignore
 
@@ -107,7 +108,7 @@ class ExecuTorchLlamaRuntime:
         except Exception:
             pass
 
-        # 2. Load the torch.export.ExportedProgram from the .pte container or .pt2 archive
+        # 2. Load the torch.export.ExportedProgram from the .pt2 archive or .pte container
         try:
             if self.pt2_path.exists():
                 self.exported_program = torch.export.load(str(self.pt2_path))
@@ -124,7 +125,8 @@ class ExecuTorchLlamaRuntime:
 
             if self.exported_program is not None:
                 self.compiled_module = self.exported_program.module()
-                self.runtime_backend = f"ExecuTorch-ExportedProgram-Graph ({HOST_ARCH}-{HOST_OS})"
+                model_tag = self.metadata.get("model_id", "LlamaForCausalLM")
+                self.runtime_backend = f"torch.export.ExportedProgram ({model_tag} | {HOST_ARCH}-{HOST_OS})"
                 self.is_loaded = True
                 logger.info("Loaded exported Llama static graph (%s)", self.runtime_backend)
                 return True
@@ -150,7 +152,7 @@ class ExecuTorchLlamaRuntime:
     def generate_tokens(
         self,
         prompt_token_ids: List[int],
-        max_new_tokens: int = 24,
+        max_new_tokens: int = 12,
         eos_token_id: int = 2,
         pad_token_id: int = 0,
     ) -> Tuple[List[int], Dict[str, float]]:
@@ -165,9 +167,9 @@ class ExecuTorchLlamaRuntime:
         rss_before_mb = proc.memory_info().rss / (1024 * 1024)
         t0 = time.perf_counter()
 
-        seq = list(prompt_token_ids)[: self.seq_len - 1]
+        seq = list(prompt_token_ids)[: max(1, self.seq_len - 1)]
         if not seq:
-            seq = [1]  # BOS token
+            seq = [1]
 
         generated: List[int] = []
         steps_executed = 0
@@ -177,7 +179,6 @@ class ExecuTorchLlamaRuntime:
             if cur_len >= self.seq_len:
                 break
 
-            # Pad sequence to fixed static graph length (1, self.seq_len)
             padded = seq + [pad_token_id] * (self.seq_len - cur_len)
             input_tensor = torch.tensor([padded], dtype=torch.long)
 

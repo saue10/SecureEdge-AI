@@ -120,7 +120,7 @@ def get_system_telemetry() -> Dict[str, Any]:
                 "pte_verified": pte_status.get("verified", False),
                 "pte_size_mb": pte_status.get("size_mb", 0.0),
                 "pte_format": pte_status.get("format", "Unknown"),
-                "artifact": str((LLAMA_MODEL_DIR / "llama_3_2_cyber_advisor.pte").name),
+                "artifact": str(engine.llama_advisor.runtime.pte_path.name),
             },
         },
     }
@@ -172,7 +172,7 @@ def api_status() -> Any:
 def api_scan_url() -> Any:
     """Execute real-time Phishing URL Detection + Llama ExecuTorch Explanation."""
     payload = request.get_json(silent=True) or {}
-    raw_url = str(payload.get("url", "")).strip()
+    raw_url = str(payload.get("url", ""))[:4096].strip()
     explain = bool(payload.get("explain", True))
 
     report = engine.analyze_url(raw_url, explain=explain, persist_history=True)
@@ -183,7 +183,7 @@ def api_scan_url() -> Any:
 def api_scan_sms() -> Any:
     """Execute real-time Scam/Spam SMS Detection + Llama ExecuTorch Explanation."""
     payload = request.get_json(silent=True) or {}
-    raw_sms = str(payload.get("sms_text", "")).strip()
+    raw_sms = str(payload.get("sms_text", ""))[:10000].strip()
     explain = bool(payload.get("explain", True))
 
     report = engine.analyze_sms(raw_sms, explain=explain, persist_history=True)

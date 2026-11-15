@@ -9,14 +9,14 @@
 
 ## 1. Executive Overview
 
-**SecureEdge AI** is a complete, reproducible, privacy-preserving edge cybersecurity system engineered to detect **phishing URLs**, **financial scam & spam SMS messages**, and **network traffic intrusions** entirely on-device—and explain those threats to non-expert users using a local **Llama 3.2 causal language model (`LlamaForCausalLM`)** exported via **PyTorch `torch.export` / ExecuTorch (`.pte`)**.
+**SecureEdge AI** is a complete, reproducible, privacy-preserving edge cybersecurity system engineered to detect **phishing URLs**, **financial scam & spam SMS messages**, and **network traffic intrusions** entirely on-device—and explain those threats to non-expert users using a genuine pretrained **Llama-family causal language model (`HuggingFaceTB/SmolLM2-135M-Instruct`, `LlamaForCausalLM`, 134.5M parameters)** exported via **PyTorch `torch.export` / ExecuTorch (`.pte`)**.
 
 ### Key Engineering Highlights
 - **Strict Separation of Responsibilities:** Specialized, probability-calibrated ML detectors (`CalibratedClassifierCV`) extract forensic indicators and compute calibrated risk scores (`0–100`), while the local Llama + ExecuTorch model translates verified detector evidence into plain-English explanations and safe remediation steps—without ever inventing evidence or overriding detector verdicts.
 - **Zero Domain Leakage URL Evaluation:** Evaluated across 1,600 URLs spanning **1,200 unique registered domains** using `GroupShuffleSplit` (`domain_overlap = 0` between 900 train domains and 300 unseen test domains).
 - **Financial Scam vs. Promotional Spam Granularity:** Combines Word + Character N-Gram TF-IDF with 12 structural coercion features to distinguish high-risk KYC/UPI/banking scams from ordinary spam and legitimate transactional OTPs.
 - **Passive Scapy Network Flow Inspection:** Aggregates live or recorded `.pcap` packet captures (`sample_network_traffic.pcap`) into 16 flow features analyzed by a calibrated Random Forest + unsupervised `IsolationForest`.
-- **Ultra-Compact Edge Footprint (`4.01 MB` Total):** All three specialized detectors (`868.6 KB` combined) plus the exported 324-node Llama ExecuTorch `.pte` artifact (`3.17 MB`) occupy just **`4.01 MB`** on disk, executing full end-to-end detection + LLM explanation in **`~195.6 ms`**.
+- **Genuine Pretrained Llama-Family + ExecuTorch (`521.79 MB` Total):** All three specialized detectors (`868.9 KB` combined) plus the exported `2,457`-node `SmolLM2-135M-Instruct` (`LlamaForCausalLM`, 134.5M params, Apache-2.0) ExecuTorch `.pte` artifact (`520.94 MB`) occupy `521.79 MB` on disk (`599.19 MB` RSS), executing full end-to-end detection + LLM explanation in `~5,013.8 ms` on the `x86_64` CPU host (with `49.1 ms` URL, `5.5 ms` SMS, `43.7 ms` Network detection). Note: `smollm2_135m_cyber_advisor.pte`/`.pt2` (>100 MB) are excluded from Git via `.gitignore` and regenerated offline/on-setup via `python scripts/export_llama_executorch.py`.
 - **100% Offline Operation:** Zero cloud APIs, zero external telemetry, and zero CDN dependencies in the web dashboard.
 
 ---
@@ -89,7 +89,7 @@ SecureEdge-AI/
 │   ├── sms_detection/                 # Hybrid TF-IDF + 12 structural scam feature extractor & detector
 │   ├── network_detection/             # Scapy packet/PCAP collector, 16D flow extractor & anomaly model
 │   ├── threat_engine/                 # Unified Threat Engine orchestrating detectors + Llama guardrails
-│   ├── llama/                         # CyberLlamaTokenizer (512 vocab) & bounded LlamaCyberAdvisor
+│   ├── llama/                         # HuggingFace Llama-family tokenizer loader & bounded LlamaCyberAdvisor
 │   └── executorch/                    # LlamaExecuTorchExporter (.pte/.pt2) & ExecuTorchLlamaRuntime
 ├── data/
 │   ├── raw/                           # Reproducible URL, SMS, and Network Flow CSV datasets
@@ -99,7 +99,7 @@ SecureEdge-AI/
 │   ├── url_detector/                  # url_detector_pipeline.joblib (262.4 KB)
 │   ├── sms_detector/                  # sms_detector_pipeline.joblib (64.2 KB)
 │   ├── network_detector/              # network_detector_pipeline.joblib (542.3 KB)
-│   ├── llama_executorch/              # llama_3_2_cyber_advisor.pte (3.17 MB), .pt2, tokenizer, HF weights
+│   ├── llama_executorch/              # smollm2_135m_cyber_advisor.pte (520.94 MB, .gitignore'd), tokenizer/, experimental_mini_llama/
 │   └── README.md                      # Model artifact inventory
 ├── scripts/
 │   ├── download_datasets.py           # Deterministic dataset & Scapy PCAP generator (seed=42)
@@ -185,11 +185,11 @@ python scripts/run_application.py --cli-demo
 
 | Pipeline Stage | Artifact | Size | Mean Latency | P95 Latency |
 | :--- | :--- | :---: | :---: | :---: |
-| **URL Phishing Detector** | `url_detector_pipeline.joblib` | `262.4 KB` | `35.15 ms` | `46.20 ms` |
-| **SMS Scam Detector** | `sms_detector_pipeline.joblib` | `64.2 KB` | `3.58 ms` | `5.80 ms` |
-| **Network Flow Detector** | `network_detector_pipeline.joblib` | `542.3 KB` | `35.80 ms` | `40.10 ms` |
-| **Llama 3.2 + ExecuTorch** | `llama_3_2_cyber_advisor.pte` | `3,240.6 KB (3.17 MB)` | `148.68 ms` | `261.19 ms` |
-| **Full End-to-End Pipeline** | **All Models Combined** | **`4.01 MB`** | **`195.58 ms`** | **`312.94 ms`** |
+| **URL Phishing Detector** | `url_detector_pipeline.joblib` | `262.4 KB` | `49.14 ms` | `74.06 ms` |
+| **SMS Scam Detector** | `sms_detector_pipeline.joblib` | `64.2 KB` | `5.46 ms` | `10.01 ms` |
+| **Network Flow Detector** | `network_detector_pipeline.joblib` | `542.3 KB` | `43.71 ms` | `52.60 ms` |
+| **Llama (`SmolLM2-135M-Instruct`) + ExecuTorch** | `smollm2_135m_cyber_advisor.pte` | `520.94 MB` | `4,970.68 ms` | `6,913.78 ms` |
+| **Full End-to-End Pipeline** | **All Models Combined** | **`521.79 MB`** | **`5,013.84 ms`** | **`6,969.34 ms`** |
 
 ### 5.3 Evaluation Figures
 - ![Confusion Matrices](evaluation/figures/confusion_matrices.png)

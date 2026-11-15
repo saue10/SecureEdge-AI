@@ -469,103 +469,12 @@ def train_network_models() -> Dict[str, Any]:
 
 def train_and_export_llama_executorch() -> Dict[str, Any]:
     """
-    Train our on-device LlamaForCausalLM (Llama 3.2 GQA + RoPE + SwiGLU architecture)
-    on structured cybersecurity threat advisories and export it through torch.export / ExecuTorch
-    into the required .pte and .pt2 artifacts.
+    Download/load the genuine pretrained Llama-family checkpoint (HuggingFaceTB/SmolLM2-135M-Instruct,
+    134.5M parameters, LlamaForCausalLM) and export it through torch.export / ExecuTorch
+    into the verified .pte and .pt2 artifacts.
     """
-    logger.info("=== [4/4] Training & Exporting Llama-3.2 Architecture Model to ExecuTorch (.pte) ===")
-    torch.manual_seed(RANDOM_SEED)
-    tokenizer = CyberLlamaTokenizer()
-    tokenizer.save()
-
-    seq_len = 64
-    config = LlamaConfig(
-        vocab_size=tokenizer.VOCAB_SIZE,
-        hidden_size=128,
-        intermediate_size=256,
-        num_hidden_layers=3,
-        num_attention_heads=4,
-        num_key_value_heads=2,  # Grouped-Query Attention (Llama 3.2 spec)
-        hidden_act="silu",      # SwiGLU activation
-        max_position_embeddings=seq_len,
-        rms_norm_eps=1e-5,
-        rope_theta=500000.0,    # Llama 3.2 RoPE theta
-        pad_token_id=tokenizer.pad_token_id,
-        bos_token_id=tokenizer.bos_token_id,
-        eos_token_id=tokenizer.eos_token_id,
-    )
-
-    model = LlamaForCausalLM(config)
-    model.train()
-
-    # Construct domain training pairs: (structured threat prompt -> grounded advisory clause)
-    training_pairs = [
-        (
-            "<json> threat_type : phishing , risk_level : high , confidence : 94 % , evidence : [ suspicious url structure ; brand impersonation ] <sep>",
-            "the url contains phishing structure used to deceive users into revealing sensitive credentials . do not open link or enter password",
-        ),
-        (
-            "<json> threat_type : phishing , risk_level : critical , confidence : 98 % , evidence : [ ip address hostname ; credential verify login ] <sep>",
-            "the url contains phishing structure used to deceive users into revealing sensitive credentials . do not open link or enter password",
-        ),
-        (
-            "<json> threat_type : scam , risk_level : high , confidence : 92 % , evidence : [ urgency coercion ; financial kyc upi otp link ] <sep>",
-            "this sms message contains financial scam coercion used to deceive users . do not click link or share otp",
-        ),
-        (
-            "<json> threat_type : spam , risk_level : medium , confidence : 78 % , evidence : [ promotional lottery prize reward callback phone ] <sep>",
-            "this sms message contains promotional spam solicitation . do not call phone number or click link",
-        ),
-        (
-            "<json> threat_type : network_anomaly , risk_level : high , confidence : 95 % , evidence : [ tcp syn flood dos ; port scan probing ] <sep>",
-            "the network flow exhibits suspicious syn flood and port scan probing . inspect firewall rules and rate limit connection attempts",
-        ),
-        (
-            "<json> threat_type : benign , risk_level : low , confidence : 96 % , evidence : [ standard url structure ; no anomalous indicators ] <sep>",
-            "no anomalous indicators were found by specialized detector . safe standard structure proceed with normal caution",
-        ),
-    ]
-
-    # Build token tensors for causal language model training
-    input_batches = []
-    label_batches = []
-    for prompt_str, target_str in training_pairs:
-        p_ids = tokenizer.encode(prompt_str, add_bos=True, add_eos=False, max_length=34)
-        t_ids = tokenizer.encode(target_str, add_bos=False, add_eos=True, max_length=seq_len - len(p_ids))
-        full_seq = p_ids + t_ids
-        padded_input = full_seq + [tokenizer.pad_token_id] * (seq_len - len(full_seq))
-        # Mask prompt and padding in labels with -100 so loss focuses on target advisory generation
-        labels = ([-100] * len(p_ids)) + t_ids + ([-100] * (seq_len - len(full_seq)))
-        input_batches.append(padded_input[:seq_len])
-        label_batches.append(labels[:seq_len])
-
-    x_tensor = torch.tensor(input_batches, dtype=torch.long)
-    y_tensor = torch.tensor(label_batches, dtype=torch.long)
-
-    optimizer = torch.optim.AdamW(model.parameters(), lr=3e-3, weight_decay=0.01)
-    t_train0 = time.perf_counter()
-    final_loss = 0.0
-    for epoch in range(90):
-        optimizer.zero_grad()
-        out = model(input_ids=x_tensor, labels=y_tensor)
-        loss = out.loss
-        loss.backward()
-        optimizer.step()
-        final_loss = float(loss.item())
-
-    train_ms = (time.perf_counter() - t_train0) * 1000.0
-    logger.info("Trained LlamaForCausalLM advisor for 90 epochs (final CE loss=%.4f in %.1f ms)", final_loss, train_ms)
-
-    model.eval()
-    # Save HuggingFace checkpoint alongside the ExecuTorch .pte artifact
-    hf_dir = LLAMA_MODEL_DIR / "hf_checkpoint"
-    hf_dir.mkdir(parents=True, exist_ok=True)
-    model.save_pretrained(str(hf_dir))
-
-    export_meta = LlamaExecuTorchExporter.export_llama_to_pte(model, seq_len=seq_len)
-    export_meta["training_final_loss"] = round(final_loss, 5)
-    export_meta["training_time_ms"] = round(train_ms, 2)
-
+    logger.info("=== [4/4] Exporting Genuine Pretrained Llama-Family Model (SmolLM2-135M-Instruct) to ExecuTorch (.pte) ===")
+    export_meta = LlamaExecuTorchExporter.export_pretrained_llama(seq_len=96)
     gc.collect()
     return export_meta
 

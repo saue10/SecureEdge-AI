@@ -190,6 +190,14 @@ def run_benchmarks_and_seed_history() -> Dict[str, Any]:
     ]
     pcap_flows = ScapyFlowCollector.load_flows_from_pcap()
 
+    # 1. Warm-up runs (5 iterations per detector, 1 for LLM)
+    for _ in range(5):
+        engine.url_detector.predict(sample_urls[0])
+        engine.sms_detector.predict(sample_sms[0])
+        engine.network_detector.predict(pcap_flows[2])
+    engine.analyze_url(sample_urls[0], explain=True, persist_history=False)
+
+    # 2. Seed realistic scans across all 3 modalities into detection_history.json
     for u in sample_urls:
         engine.analyze_url(u, explain=True, persist_history=True)
     for s in sample_sms:
@@ -197,7 +205,7 @@ def run_benchmarks_and_seed_history() -> Dict[str, Any]:
     for fl in pcap_flows[:4]:
         engine.analyze_network_flow(fl, explain=True, execution_mode="replay_demo", persist_history=True)
 
-    # 2. Component-level latency & throughput benchmarking (50 iterations for detectors, 15 for LLM)
+    # 3. Component-level latency & throughput benchmarking (50 iterations for detectors, 5 for 135M LLM)
     url_latencies = []
     for _ in range(50):
         res = engine.url_detector.predict(sample_urls[0])
@@ -218,7 +226,7 @@ def run_benchmarks_and_seed_history() -> Dict[str, Any]:
     psutil.cpu_percent(interval=None)
     rss_start = proc.memory_info().rss / (1024 * 1024)
 
-    for i in range(12):
+    for i in range(5):
         rep = engine.analyze_url(sample_urls[i % len(sample_urls)], explain=True, persist_history=False)
         llama_latencies.append(rep.llama_output.generation_latency_ms)
         e2e_latencies.append(rep.total_pipeline_latency_ms)
@@ -229,10 +237,11 @@ def run_benchmarks_and_seed_history() -> Dict[str, Any]:
     url_size_kb = round((URL_MODEL_DIR / "url_detector_pipeline.joblib").stat().st_size / 1024.0, 2)
     sms_size_kb = round((SMS_MODEL_DIR / "sms_detector_pipeline.joblib").stat().st_size / 1024.0, 2)
     net_size_kb = round((NETWORK_MODEL_DIR / "network_detector_pipeline.joblib").stat().st_size / 1024.0, 2)
-    pte_size_kb = round((LLAMA_MODEL_DIR / "llama_3_2_cyber_advisor.pte").stat().st_size / 1024.0, 2)
+    pte_size_kb = round((LLAMA_MODEL_DIR / "smollm2_135m_cyber_advisor.pte").stat().st_size / 1024.0, 2)
 
     pte_check = engine.llama_advisor.runtime.verify_pte_artifact()
 
+    import torch
     benchmark_report = {
         "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "measured_hardware_environment": {
@@ -242,8 +251,12 @@ def run_benchmarks_and_seed_history() -> Dict[str, Any]:
             "physical_cores": psutil.cpu_count(logical=False),
             "logical_cores": psutil.cpu_count(logical=True),
             "total_ram_gb": round(psutil.virtual_memory().total / (1024**3), 2),
+            "python_version": platform.python_version(),
+            "pytorch_version": torch.__version__,
             "is_arm_hardware": IS_ARM,
             "measurement_category": "ARM64 Edge Measured" if IS_ARM else "x86_64 Host Measured (ARM64 Target Pending Physical Board)",
+            "warmup_runs": {"detectors": 5, "llama_e2e": 1},
+            "measured_runs": {"detectors": 50, "llama_e2e": 5},
             "power_consumption_watts": "Not Measured (Requires external USB-C hardware power meter on target board)",
         },
         "arm_edge_deployment_readiness": {

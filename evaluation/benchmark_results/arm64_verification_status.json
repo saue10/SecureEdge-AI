@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-11-15T08:37:19Z",
+  "timestamp": "2026-11-15T09:20:40Z",
   "arm_capabilities": {
     "architecture": "amd64",
     "os": "Windows",
@@ -12,28 +12,30 @@
   "executorch_pte_artifact": {
     "verified": true,
     "format": "ExecuTorch-Portable-ExportedProgram-Container",
-    "size_bytes": 3318416,
-    "size_mb": 3.165,
+    "model_id": "HuggingFaceTB/SmolLM2-135M-Instruct",
+    "size_bytes": 546248225,
+    "size_mb": 520.943,
     "header": {
       "format": "ExecuTorch-Portable-ExportedProgram-Container",
-      "schema_version": "1.0",
+      "schema_version": "1.1",
+      "model_id": "HuggingFaceTB/SmolLM2-135M-Instruct",
       "model_type": "llama",
-      "seq_len": 64,
-      "vocab_size": 512,
-      "hidden_size": 128,
-      "num_hidden_layers": 3,
-      "num_attention_heads": 4,
-      "num_key_value_heads": 2,
+      "seq_len": 96,
+      "vocab_size": 49152,
+      "hidden_size": 576,
+      "num_hidden_layers": 30,
+      "num_attention_heads": 9,
+      "num_key_value_heads": 3,
       "target_delegate": "XNNPACK"
     }
   },
-  "runtime_backend": "ExecuTorch-ExportedProgram-Graph (amd64-Windows)",
+  "runtime_backend": "torch.export.ExportedProgram (HuggingFaceTB/SmolLM2-135M-Instruct | amd64-Windows)",
   "verification_smoke_test": {
     "url_classification": "malicious",
-    "url_risk_score": 82,
+    "url_risk_score": 100,
     "sms_classification": "benign",
-    "sms_risk_score": 25,
+    "sms_risk_score": 24,
     "llama_explanation_verified": true,
-    "total_smoke_test_ms": 315.9
+    "total_smoke_test_ms": 35053.87
   }
 }

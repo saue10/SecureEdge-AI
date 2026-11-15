@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-11-15T08:46:17Z",
+  "timestamp": "2026-11-15T09:17:36Z",
   "url_detection": {
     "selected_model": "RandomForest_Calibrated",
     "domain_leakage_overlap": 0,
@@ -16,8 +16,8 @@
         "fn": 0,
         "tp": 208
       },
-      "train_time_ms": 612.78,
-      "inference_latency_ms": 37.046,
+      "train_time_ms": 1293.22,
+      "inference_latency_ms": 45.551,
       "model_size_kb": 261.29,
       "saved_bundle_size_kb": 262.37
     },
@@ -35,8 +35,8 @@
           "fn": 0,
           "tp": 208
         },
-        "train_time_ms": 24.55,
-        "inference_latency_ms": 0.2128,
+        "train_time_ms": 58.92,
+        "inference_latency_ms": 0.4689,
         "model_size_kb": 1.68
       },
       "RandomForest_Calibrated": {
@@ -52,8 +52,8 @@
           "fn": 0,
           "tp": 208
         },
-        "train_time_ms": 612.78,
-        "inference_latency_ms": 37.046,
+        "train_time_ms": 1293.22,
+        "inference_latency_ms": 45.551,
         "model_size_kb": 261.29,
         "saved_bundle_size_kb": 262.37
       },
@@ -70,8 +70,8 @@
           "fn": 0,
           "tp": 208
         },
-        "train_time_ms": 630.83,
-        "inference_latency_ms": 3.2678,
+        "train_time_ms": 303.12,
+        "inference_latency_ms": 2.0458,
         "model_size_kb": 120.06
       },
       "Lightweight_MLP": {
@@ -87,8 +87,8 @@
           "fn": 2,
           "tp": 206
         },
-        "train_time_ms": 219.67,
-        "inference_latency_ms": 0.2299,
+        "train_time_ms": 169.85,
+        "inference_latency_ms": 0.2072,
         "model_size_kb": 100.97
       }
     }
@@ -108,9 +108,9 @@
         "fn": 0,
         "tp": 150
       },
-      "train_time_ms": 206.46,
-      "inference_latency_ms": 1.5709,
-      "model_size_kb": 64.18
+      "train_time_ms": 200.56,
+      "inference_latency_ms": 1.1938,
+      "model_size_kb": 64.17
     },
     "candidates": {
       "Calibrated_LinearSVC": {
@@ -126,9 +126,9 @@
           "fn": 0,
           "tp": 150
         },
-        "train_time_ms": 206.46,
-        "inference_latency_ms": 1.5709,
-        "model_size_kb": 64.18
+        "train_time_ms": 200.56,
+        "inference_latency_ms": 1.1938,
+        "model_size_kb": 64.17
       },
       "LogisticRegression": {
         "accuracy": 1.0,
@@ -143,8 +143,8 @@
           "fn": 0,
           "tp": 150
         },
-        "train_time_ms": 21.19,
-        "inference_latency_ms": 0.0825
+        "train_time_ms": 19.32,
+        "inference_latency_ms": 0.0694
       },
       "RandomForest": {
         "accuracy": 1.0,
@@ -159,8 +159,8 @@
           "fn": 0,
           "tp": 150
         },
-        "train_time_ms": 225.11,
-        "inference_latency_ms": 9.8976
+        "train_time_ms": 224.06,
+        "inference_latency_ms": 9.8251
       }
     }
   },
@@ -179,8 +179,8 @@
         "fn": 0,
         "tp": 187
       },
-      "train_time_ms": 522.72,
-      "inference_latency_ms": 23.5923,
+      "train_time_ms": 501.51,
+      "inference_latency_ms": 25.1193,
       "model_size_kb": 542.31
     },
     "candidates": {
@@ -197,8 +197,8 @@
           "fn": 0,
           "tp": 187
         },
-        "train_time_ms": 522.72,
-        "inference_latency_ms": 23.5923,
+        "train_time_ms": 501.51,
+        "inference_latency_ms": 25.1193,
         "model_size_kb": 542.31
       },
       "GradientBoosting": {
@@ -214,8 +214,8 @@
           "fn": 0,
           "tp": 187
         },
-        "train_time_ms": 173.28,
-        "inference_latency_ms": 1.6909
+        "train_time_ms": 222.92,
+        "inference_latency_ms": 1.6098
       },
       "LogisticRegression": {
         "accuracy": 0.9147,
@@ -230,40 +230,42 @@
           "fn": 24,
           "tp": 163
         },
-        "train_time_ms": 11.48,
-        "inference_latency_ms": 0.2152
+        "train_time_ms": 12.2,
+        "inference_latency_ms": 0.1992
       }
     }
   },
   "llama_executorch": {
-    "model_family": "Llama-3.2 (LlamaForCausalLM)",
+    "model_id": "HuggingFaceTB/SmolLM2-135M-Instruct",
+    "model_provenance_category": "A: Genuine Pretrained Llama-Family Checkpoint (Apache-2.0)",
+    "model_family": "Llama-Family (LlamaForCausalLM)",
     "architecture": "LlamaForCausalLM",
-    "vocab_size": 512,
-    "hidden_size": 128,
-    "intermediate_size": 256,
-    "num_hidden_layers": 3,
-    "num_attention_heads": 4,
-    "num_key_value_heads": 2,
-    "rope_theta": 500000.0,
-    "max_seq_len": 64,
-    "parameter_count": 574336,
+    "vocab_size": 49152,
+    "hidden_size": 576,
+    "intermediate_size": 1536,
+    "num_hidden_layers": 30,
+    "num_attention_heads": 9,
+    "num_key_value_heads": 3,
+    "rope_theta": 10000.0,
+    "tokenizer_class": "GPT2Tokenizer",
+    "max_seq_len": 96,
+    "parameter_count": 134515008,
+    "quantization": "float32 (CPU portable baseline; int8/int4 XNNPACK target configured for ARM64)",
     "export_api": "torch.export (PyTorch 2.8.0+cpu)",
     "native_executorch_wheel_present": false,
     "backend_delegate": "torch.export.ExportedProgram + XNNPACK-Target-Spec",
     "target_arm_delegate": "XNNPACK (ARM64 NEON / Raspberry Pi 5 Cortex-A76)",
     "host_export_platform": "amd64-Windows",
-    "graph_node_count": 324,
+    "graph_node_count": 2457,
     "graph_op_breakdown": {
-      "placeholder": 33,
-      "call_function": 290,
+      "placeholder": 276,
+      "call_function": 2180,
       "output": 1
     },
-    "pte_artifact_path": "llama_3_2_cyber_advisor.pte",
-    "pte_size_bytes": 3318416,
-    "pte_size_mb": 3.165,
-    "pt2_size_bytes": 3318129,
-    "export_duration_ms": 5283.8,
-    "training_final_loss": 0.01269,
-    "training_time_ms": 4308.85
+    "pte_artifact_path": "smollm2_135m_cyber_advisor.pte",
+    "pte_size_bytes": 546248225,
+    "pte_size_mb": 520.943,
+    "pt2_size_bytes": 546247884,
+    "export_duration_ms": 44313.08
   }
 }

@@ -568,6 +568,16 @@ Unusual hostname characteristics</textarea>
   </div>
 
   <script>
+    function escapeHtml(str) {
+      if (str === null || str === undefined) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
     function switchTab(tabId, el) {
       document.querySelectorAll('.section-view').forEach(s => s.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -582,36 +592,36 @@ Unusual hostname characteristics</textarea>
       const det = rep.detector_result;
       const llm = rep.llama_output;
       const vClass = det.classification === 'malicious' ? 'verdict-malicious' : (det.classification === 'suspicious' ? 'verdict-suspicious' : 'verdict-benign');
-      const evItems = (det.evidence || []).map(e => `<li>${e}</li>`).join('');
+      const evItems = (det.evidence || []).map(e => `<li>${escapeHtml(e)}</li>`).join('');
       return `
         <div class="card">
           <div class="verdict-banner ${vClass}">
-            <div>VERDICT: ${det.classification.toUpperCase()} (${det.threat_type.toUpperCase()})</div>
-            <div>RISK SCORE: ${det.risk_score}/100 (${det.risk_level ? det.risk_level.toUpperCase() : ''}) | CONFIDENCE: ${(det.confidence * 100).toFixed(1)}%</div>
+            <div>VERDICT: ${escapeHtml(det.classification.toUpperCase())} (${escapeHtml(det.threat_type.toUpperCase())})</div>
+            <div>RISK SCORE: ${Number(det.risk_score)}/100 (${escapeHtml(det.risk_level ? det.risk_level.toUpperCase() : '')}) | CONFIDENCE: ${(det.confidence * 100).toFixed(1)}%</div>
           </div>
           <div class="grid-2">
             <div>
-              <div class="card-title">Specialized Detector Evidence (${det.model_version})</div>
+              <div class="card-title">Specialized Detector Evidence (${escapeHtml(det.model_version)})</div>
               <p style="font-size:0.84rem; color:var(--text-secondary); margin-bottom:8px;">
-                <strong>Input:</strong> ${det.raw_input_summary}<br/>
-                <strong>Execution Mode:</strong> ${rep.execution_mode} | <strong>Detector Latency:</strong> ${det.inference_latency_ms} ms
+                <strong>Input:</strong> ${escapeHtml(det.raw_input_summary)}<br/>
+                <strong>Execution Mode:</strong> ${escapeHtml(rep.execution_mode)} | <strong>Detector Latency:</strong> ${Number(det.inference_latency_ms)} ms
               </p>
               <ul class="evidence-list">${evItems}</ul>
             </div>
             <div>
               <div class="llama-box" style="margin-top:0;">
-                <h4>Local Llama + ExecuTorch Advisory (${llm.runtime_backend})</h4>
-                <p style="font-size:0.9rem; margin-bottom:10px;"><strong>Explanation:</strong> ${llm.explanation}</p>
-                <p style="font-size:0.9rem; margin-bottom:8px;"><strong>Recommended Action:</strong> ${llm.recommendation}</p>
+                <h4>Local Llama + ExecuTorch Advisory (${escapeHtml(llm.runtime_backend)})</h4>
+                <p style="font-size:0.9rem; margin-bottom:10px;"><strong>Explanation:</strong> ${escapeHtml(llm.explanation)}</p>
+                <p style="font-size:0.9rem; margin-bottom:8px;"><strong>Recommended Action:</strong> ${escapeHtml(llm.recommendation)}</p>
                 <p style="font-size:0.78rem; color:var(--text-secondary);">
-                  .pte Verified: ${llm.pte_artifact_verified ? 'YES' : 'NO'} | LLM Latency: ${llm.generation_latency_ms} ms | Total Pipeline: ${rep.total_pipeline_latency_ms} ms
+                  .pte Verified: ${llm.pte_artifact_verified ? 'YES' : 'NO'} | LLM Latency: ${Number(llm.generation_latency_ms)} ms | Total Pipeline: ${Number(rep.total_pipeline_latency_ms)} ms
                 </p>
               </div>
             </div>
           </div>
           <details style="margin-top:10px;">
             <summary style="cursor:pointer; font-size:0.82rem; color:var(--accent-blue);">Inspect Canonical PS3 JSON Schema Output</summary>
-            <pre style="margin-top:8px;">${JSON.stringify({detector_schema: {source: det.source, threat_type: det.threat_type, classification: det.classification, confidence: det.confidence, risk_score: det.risk_score, evidence: det.evidence, timestamp: det.timestamp, model_version: det.model_version}, llama_schema: {explanation: llm.explanation, recommendation: llm.recommendation, risk_level: llm.risk_level}}, null, 2)}</pre>
+            <pre style="margin-top:8px;">${escapeHtml(JSON.stringify({detector_schema: {source: det.source, threat_type: det.threat_type, classification: det.classification, confidence: det.confidence, risk_score: det.risk_score, evidence: det.evidence, timestamp: det.timestamp, model_version: det.model_version}, llama_schema: {explanation: llm.explanation, recommendation: llm.recommendation, risk_level: llm.risk_level}}, null, 2))}</pre>
           </details>
         </div>
       `;
@@ -759,14 +769,14 @@ Unusual hostname characteristics</textarea>
       const data = await res.json();
       const rows = (data.history || []).map(r => `
         <tr>
-          <td>${r.timestamp.slice(0,19).replace('T',' ')}</td>
-          <td>${r.source.toUpperCase()}</td>
-          <td>${r.raw_input_summary}</td>
-          <td><strong style="color:${r.classification==='malicious'?'#f87171':(r.classification==='suspicious'?'#fbbf24':'#34d399')}">${r.classification.toUpperCase()}</strong> (${r.threat_type})</td>
-          <td>${r.risk_score}/100</td>
+          <td>${escapeHtml((r.timestamp || '').slice(0,19).replace('T',' '))}</td>
+          <td>${escapeHtml((r.source || '').toUpperCase())}</td>
+          <td>${escapeHtml(r.raw_input_summary)}</td>
+          <td><strong style="color:${r.classification==='malicious'?'#f87171':(r.classification==='suspicious'?'#fbbf24':'#34d399')}">${escapeHtml((r.classification || '').toUpperCase())}</strong> (${escapeHtml(r.threat_type)})</td>
+          <td>${Number(r.risk_score)}/100</td>
           <td>${(r.confidence*100).toFixed(1)}%</td>
-          <td>${r.total_latency_ms} ms</td>
-          <td>${r.execution_mode}</td>
+          <td>${Number(r.total_latency_ms)} ms</td>
+          <td>${escapeHtml(r.execution_mode)}</td>
         </tr>
       `).join('');
       document.getElementById('history-table-body').innerHTML = rows || '<tr><td colspan="8">No detection history recorded yet.</td></tr>';
@@ -795,8 +805,8 @@ Unusual hostname characteristics</textarea>
               <tr><td>1. URL Phishing Detector</td><td>${tm.url_detection?.selected_model}</td><td>${eb.url_detector?.mean_latency_ms} ms</td><td>${eb.url_detector?.p95_latency_ms} ms</td><td>${eb.url_detector?.model_size_kb} KB</td></tr>
               <tr><td>2. SMS Scam Detector</td><td>${tm.sms_detection?.selected_model}</td><td>${eb.sms_detector?.mean_latency_ms} ms</td><td>${eb.sms_detector?.p95_latency_ms} ms</td><td>${eb.sms_detector?.model_size_kb} KB</td></tr>
               <tr><td>3. Network Anomaly Detector</td><td>${tm.network_detection?.selected_model} + IsolationForest</td><td>${eb.network_detector?.mean_latency_ms} ms</td><td>${eb.network_detector?.p95_latency_ms} ms</td><td>${eb.network_detector?.model_size_kb} KB</td></tr>
-              <tr><td>4. Llama + ExecuTorch Advisor</td><td>${eb.llama_executorch?.runtime_backend}</td><td>${eb.llama_executorch?.mean_latency_ms} ms</td><td>${eb.llama_executorch?.p95_latency_ms} ms</td><td>${eb.llama_executorch?.model_size_kb} KB (3.17 MB)</td></tr>
-              <tr><td><strong>Complete E2E Pipeline</strong></td><td>Detector + Threat Engine + Llama (.pte)</td><td><strong>${eb.end_to_end_pipeline?.mean_latency_ms} ms</strong></td><td><strong>${eb.end_to_end_pipeline?.p95_latency_ms} ms</strong></td><td><strong>4,109 KB (4.01 MB Total)</strong></td></tr>
+              <tr><td>4. Llama + ExecuTorch Advisor</td><td>${escapeHtml(eb.llama_executorch?.runtime_backend)}</td><td>${eb.llama_executorch?.mean_latency_ms} ms</td><td>${eb.llama_executorch?.p95_latency_ms} ms</td><td>${eb.llama_executorch?.model_size_kb} KB (${(Number(eb.llama_executorch?.model_size_kb || 0)/1024).toFixed(2)} MB)</td></tr>
+              <tr><td><strong>Complete E2E Pipeline</strong></td><td>Detector + Threat Engine + Llama (.pte)</td><td><strong>${eb.end_to_end_pipeline?.mean_latency_ms} ms</strong></td><td><strong>${eb.end_to_end_pipeline?.p95_latency_ms} ms</strong></td><td><strong>${data.edge_benchmarks.arm_edge_deployment_readiness?.total_models_footprint_mb || 'N/A'} MB Total</strong></td></tr>
             </tbody>
           </table>
         </div>

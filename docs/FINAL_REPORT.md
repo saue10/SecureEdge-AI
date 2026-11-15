@@ -10,7 +10,7 @@
 
 ## 1. Abstract
 
-The rapid proliferation of digital banking, Unified Payments Interface (UPI) transactions, and mobile connectivity has been accompanied by a surge in sophisticated phishing URLs, financial SMS fraud, and localized network intrusions targeting end-user and edge devices. Conventional cybersecurity solutions predominantly rely on cloud-hosted detection APIs and large centralized language models, introducing network latency, single points of failure during offline operation, and severe privacy risks when transmitting sensitive personal communications off-device. This report presents **SecureEdge AI**, a privacy-preserving, modular on-device cybersecurity assistant engineered for ARM-based edge platforms using **PyTorch ExecuTorch** and a **Llama-family causal language model (`LlamaForCausalLM`)**. SecureEdge AI decouples high-speed statistical threat detection from generative AI explanation: three specialized, probability-calibrated detectors analyze URLs (32 lexical/host indicators), SMS messages (word/character n-gram TF-IDF + 12 structural coercion markers), and passive Scapy network traffic flows (16 flow telemetry features + unsupervised `IsolationForest`) in `3.6–37.3 ms`. Their structured forensic evidence is passed to an on-device Llama 3.2 architecture model exported into a `3.17 MB` ExecuTorch `.pte` static graph (`324` ATen nodes), generating grounded, schema-validated explanations and actionable remediation steps in `~148.7 ms` with a combined multi-model storage footprint of just `4.01 MB`.
+The rapid proliferation of digital banking, Unified Payments Interface (UPI) transactions, and mobile connectivity has been accompanied by a surge in sophisticated phishing URLs, financial SMS fraud, and localized network intrusions targeting end-user and edge devices. Conventional cybersecurity solutions predominantly rely on cloud-hosted detection APIs and large centralized language models, introducing network latency, single points of failure during offline operation, and severe privacy risks when transmitting sensitive personal communications off-device. This report presents **SecureEdge AI**, a privacy-preserving, modular on-device cybersecurity assistant engineered for ARM-based edge platforms using **PyTorch ExecuTorch** and a **Llama-family causal language model (`LlamaForCausalLM`)**. SecureEdge AI decouples high-speed statistical threat detection from generative AI explanation: three specialized, probability-calibrated detectors analyze URLs (32 lexical/host indicators), SMS messages (word/character n-gram TF-IDF + 12 structural coercion markers), and passive Scapy network traffic flows (16 flow telemetry features + unsupervised `IsolationForest`) in `3.6–37.3 ms`. Their structured forensic evidence is passed to an on-device genuine pretrained Llama-family model (`HuggingFaceTB/SmolLM2-135M-Instruct`, `LlamaForCausalLM`, `134.5M` parameters, Apache-2.0) exported into a `520.94 MB` ExecuTorch `.pte` static graph (`2,457` ATen nodes), generating grounded, schema-validated explanations and actionable remediation steps in `~4,970.7 ms` on the `x86_64` CPU host with a combined multi-model storage footprint of `521.79 MB`.
 
 ---
 
@@ -87,8 +87,8 @@ flowchart TD
 ### 8.1 Evaluated Development Host
 - **OS:** Windows 11 (`10.0.26200-SP0`, `AMD64` / `x86_64`)
 - **CPU:** 11th Gen Intel Core i5-1135G7 @ 2.40 GHz (4 Physical Cores, 8 Logical Threads)
-- **RAM:** 7.75 GB System RAM (Peak SecureEdge AI process RSS: `477.5 MB`)
-- **Storage:** `4.01 MB` for all trained models + `.pte` artifact
+- **RAM:** 7.75 GB System RAM (Peak SecureEdge AI process RSS: `599.19 MB`)
+- **Storage:** `521.79 MB` for all trained models + `.pte` artifact (`868.9 KB` detectors + `520.94 MB` `.pte`)
 
 ### 8.2 Target ARM64 Edge Hardware
 - **Primary Baseline:** Raspberry Pi 5 (Broadcom BCM2712, Quad-Core ARM Cortex-A76 @ 2.4 GHz, 4 GB / 8 GB LPDDR4X, Debian Bookworm 64-bit / Ubuntu 24.04 `aarch64`)
@@ -160,21 +160,21 @@ All datasets are reproducibly generated/curated via `scripts/download_datasets.p
 
 ## 14. Llama Integration (`src/llama/`)
 
-SecureEdge AI integrates a genuine **Llama 3.2 causal language model architecture (`transformers.LlamaForCausalLM`)**:
-- **Hyperparameters:** `vocab_size = 512` (`CyberLlamaTokenizer`), `hidden_size = 128`, `intermediate_size = 256`, `num_hidden_layers = 3`, `num_attention_heads = 4`, `num_key_value_heads = 2` (Grouped-Query Attention), `hidden_act = "silu"` (SwiGLU), `rope_theta = 500000.0`, `max_position_embeddings = 64` (`574,336` parameters).
-- **Training:** Trained via `AdamW` for 90 epochs on structured cybersecurity prompt-advisory sequences (`final cross-entropy loss = 0.01269`).
-- **Bounded Prompt & Guardrail:** `LlamaCyberAdvisor` encodes `LlamaExplanationInput` into a structured token sequence, decodes autoregressive tokens from the exported ExecuTorch graph, and synthesizes a strictly grounded `LlamaExplanationOutput` whose `risk_level` is locked to the specialized detector's verdict.
+SecureEdge AI integrates a genuine pretrained **Llama-family causal language model (`HuggingFaceTB/SmolLM2-135M-Instruct`, `transformers.LlamaForCausalLM`, Apache-2.0)**:
+- **Hyperparameters:** `vocab_size = 49,152` (offline HuggingFace `GPT2Tokenizer`), `hidden_size = 576`, `intermediate_size = 1536`, `num_hidden_layers = 30`, `num_attention_heads = 9`, `num_key_value_heads = 3` (Grouped-Query Attention), `hidden_act = "silu"` (SwiGLU), `rope_theta = 10000.0`, `max_seq_len = 96` (`134,515,008` parameters).
+- **Provenance:** Category A — Genuine Pretrained Llama-Family Checkpoint (ungated Apache-2.0). An earlier experimental `574,336`-parameter `3.17 MB` mini-Llama prototype is preserved in `models/llama_executorch/experimental_mini_llama/` for ablation reference.
+- **Bounded Prompt & Guardrail:** `LlamaCyberAdvisor` formats `LlamaExplanationInput` using the offline HuggingFace chat template, runs greedy autoregressive decoding over the exported ExecuTorch graph (`max_new_tokens=10`), and synthesizes a strictly grounded `LlamaExplanationOutput` whose `risk_level` is locked to the specialized detector's verdict.
 
 ---
 
 ## 15. ExecuTorch Deployment (`src/executorch/`)
 
 `LlamaExecuTorchExporter` (`src/executorch/exporter.py`) and `ExecuTorchLlamaRuntime` (`src/executorch/runtime.py`) implement the complete export and execution lifecycle:
-1. **Static Graph Capture:** `ExportableLlamaCausalLM` wraps `LlamaForCausalLM` with fixed tensor input `(1, 64)` (`use_cache=False`) and invokes `torch.export.export()`, producing a verified `ExportedProgram` containing **324 graph nodes** (`290 call_function` operators, `33 placeholders`, `1 output`).
+1. **Static Graph Capture:** `ExportableLlamaCausalLM` wraps `LlamaForCausalLM` with fixed tensor input `(1, 96)` (`use_cache=False`) and invokes `torch.export.export()`, producing a verified `ExportedProgram` containing **2,457 graph nodes** (`2,180 call_function` operators, `276 placeholders`, `1 output`).
 2. **XNNPACK Lowering & `.pte` Artifact Generation:**
-   - Generates `models/llama_executorch/llama_3_2_cyber_advisor.pte` (`3,318,416 bytes` / `3.165 MB`) and `llama_3_2_cyber_advisor.pt2`.
+   - Generates `models/llama_executorch/smollm2_135m_cyber_advisor.pte` (`546,248,225 bytes` / `520.94 MB`) and `smollm2_135m_cyber_advisor.pt2` (both `.gitignore`d to comply with GitHub's 100 MB file limit; regenerated via `python scripts/export_llama_executorch.py`).
    - When executed on Linux / ARM64 environments where the native `executorch` C++ wheel is installed, `LlamaExecuTorchExporter` lowers the graph through `executorch.exir.to_edge_transform_and_lower` with `XnnpackPartitioner()` and executes via `executorch.runtime.Runtime`.
-   - When executed on the Windows 11 Python 3.13 host (where PyPI does not publish a prebuilt `win_amd64` `cp313` C++ wheel for `executorch`), it executes inference directly through the compiled `torch.export.ExportedProgram.module()` static graph stored inside the `.pte`/`.pt2` artifact.
+   - When executed on the Windows 11 Python 3.13 host (where PyPI does not publish a prebuilt `win_amd64` `cp313` C++ wheel for `executorch`, and `torch 2.10+`/`2.15` fail Windows `c10.dll` initialization), it executes inference directly through the compiled `torch.export.ExportedProgram.module()` static graph stored inside the `.pte`/`.pt2` artifact.
 
 ---
 
@@ -202,14 +202,14 @@ All experiments were executed reproducibly using fixed random seeds (`RANDOM_SEE
 
 | Component | Mean Latency (ms) | P95 Latency (ms) | Throughput | Artifact Size |
 | :--- | :---: | :---: | :---: | :---: |
-| **1. URL Phishing Detector** | `35.15 ms` | `46.20 ms` | `28.4 items/sec` | `262.37 KB` |
-| **2. SMS Scam Detector** | `3.58 ms` | `5.80 ms` | `279.3 items/sec` | `63.90 KB` |
-| **3. Network Flow Detector** | `35.80 ms` | `40.10 ms` | `27.9 flows/sec` | `542.31 KB` |
-| **4. Llama + ExecuTorch (`.pte`)** | `148.68 ms` | `261.19 ms` | `6.73 advisories/sec` | `3,240.64 KB (3.17 MB)` |
-| **Complete End-to-End Pipeline** | **`195.58 ms`** | **`312.94 ms`** | **`5.11 reports/sec`** | **`4,109.22 KB (4.01 MB)`** |
+| **1. URL Phishing Detector** | `49.14 ms` | `74.06 ms` | `20.4 items/sec` | `262.37 KB` |
+| **2. SMS Scam Detector** | `5.46 ms` | `10.01 ms` | `183.1 items/sec` | `64.17 KB` |
+| **3. Network Flow Detector** | `43.71 ms` | `52.60 ms` | `22.9 flows/sec` | `542.31 KB` |
+| **4. Llama (`SmolLM2-135M-Instruct`) + ExecuTorch (`.pte`)** | `4,970.68 ms` | `6,913.78 ms` | `0.20 advisories/sec` | `533,445.53 KB (520.94 MB)` |
+| **Complete End-to-End Pipeline** | **`5,013.84 ms`** | **`6,969.34 ms`** | **`0.20 reports/sec`** | **`521.79 MB`** |
 
-- **Memory Footprint:** Total process RSS memory during active end-to-end inference is **`477.46 MB`**, with an incremental per-inference RSS delta of **`0.28 MB`**.
-- **CPU Utilization:** `85.4%` across 4 cores during continuous back-to-back benchmark stress testing.
+- **Memory Footprint:** Total process RSS memory during active end-to-end inference is **`599.19 MB`**, with an incremental per-inference RSS delta of **`0.00 MB`** (static graph pre-allocated).
+- **CPU Utilization:** `100.0%` across 4 cores during continuous back-to-back benchmark stress testing.
 - **Power Consumption:** **Not Measured** (Software-only host telemetry; requires inline USB-C PD hardware wattmeter on physical Raspberry Pi 5 board).
 
 ---
@@ -241,7 +241,7 @@ All experiments were executed reproducibly using fixed random seeds (`RANDOM_SEE
 
 ## 22. Conclusion
 
-**SecureEdge AI** demonstrates a complete, reproducible, and privacy-preserving on-device cybersecurity system tailored for Problem Statement 3 of the Bharat AI-SoC Challenge 2026–27. By uniting fast, probability-calibrated URL, SMS, and passive Scapy network detectors with a schema-bounded Llama 3.2 model exported via PyTorch ExecuTorch (`.pte`), SecureEdge AI delivers accurate threat detection and clear human-centric remediation in under `200 ms` within a `4.01 MB` storage budget—entirely offline and on-device.
+**SecureEdge AI** demonstrates a complete, reproducible, and privacy-preserving on-device cybersecurity system tailored for Problem Statement 3 of the Bharat AI-SoC Challenge 2026–27. By uniting fast, probability-calibrated URL, SMS, and passive Scapy network detectors with a schema-bounded genuine pretrained Llama-family model (`HuggingFaceTB/SmolLM2-135M-Instruct`) exported via PyTorch ExecuTorch (`.pte`), SecureEdge AI delivers accurate threat detection in `< 50 ms` and clear human-centric remediation in `~5.0 s` on CPU within `599.19 MB` RSS—entirely offline and on-device.
 
 ---
 
