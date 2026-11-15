@@ -68,24 +68,40 @@ class LlamaExecuTorchExporter:
         cls,
         model_id: str = DEFAULT_PRETRAINED_LLAMA_ID,
         seq_len: int = 96,
+        quantization: str = "float32",
         pte_path: Optional[Path] = None,
         pt2_path: Optional[Path] = None,
         meta_path: Optional[Path] = None,
         tokenizer_dir: Optional[Path] = None,
     ) -> Dict[str, Any]:
-        """Download/load a genuine pretrained LlamaForCausalLM checkpoint, save tokenizer offline, and export to .pte."""
-        logger.info("Loading genuine pretrained Llama-family checkpoint: %s", model_id)
+        """Download/load a pretrained LlamaForCausalLM checkpoint, optionally quantize (8da4w), and export to .pte."""
+        logger.info("Loading pretrained LlamaForCausalLM checkpoint: %s (quantization=%s)", model_id, quantization)
         tok_dir = Path(tokenizer_dir) if tokenizer_dir else cls.DEFAULT_TOKENIZER_DIR
         tok_dir.mkdir(parents=True, exist_ok=True)
 
         tokenizer = AutoTokenizer.from_pretrained(model_id)
         tokenizer.save_pretrained(str(tok_dir))
 
+        load_dtype = torch.bfloat16 if quantization == "8da4w" else torch.float32
         model = AutoModelForCausalLM.from_pretrained(
             model_id,
-            dtype=torch.float32,
+            dtype=load_dtype,
             low_cpu_mem_usage=True,
         ).eval()
+
+        if quantization == "8da4w":
+            try:
+                from torchao.quantization import (  # type: ignore
+                    Int8DynamicActivationInt4WeightConfig,
+                    quantize_,
+                )
+
+                quantize_(model, Int8DynamicActivationInt4WeightConfig(group_size=32))
+                logger.info("Applied torchao 8da4w (int8 dynamic activation + int4 group_size=32 weight) quantization")
+            except ImportError as exc:
+                raise RuntimeError(
+                    "8da4w quantization requires torchao (supported on Linux/ARM64 with PyTorch ExecuTorch)."
+                ) from exc
 
         return cls.export_llama_to_pte(
             llama_model=model,

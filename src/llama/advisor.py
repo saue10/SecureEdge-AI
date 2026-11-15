@@ -29,6 +29,7 @@ class LlamaCyberAdvisor:
     executes autoregressive token decoding through the static ExportedProgram graph.
     """
 
+    META_LLAMA_TOKENIZER_DIR = LLAMA_MODEL_DIR / "tokenizer_llama_3_2_1b"
     DEFAULT_TOKENIZER_DIR = LLAMA_MODEL_DIR / "tokenizer"
 
     def __init__(
@@ -44,10 +45,16 @@ class LlamaCyberAdvisor:
 
     def _load_offline_tokenizer(self) -> Any:
         """Load the saved local tokenizer strictly offline (local_files_only=True)."""
-        if self.DEFAULT_TOKENIZER_DIR.exists():
+        tok_dir = (
+            self.META_LLAMA_TOKENIZER_DIR
+            if self.runtime.pte_path == ExecuTorchLlamaRuntime.OFFICIAL_META_LLAMA_PTE
+            and self.META_LLAMA_TOKENIZER_DIR.exists()
+            else self.DEFAULT_TOKENIZER_DIR
+        )
+        if tok_dir.exists():
             try:
-                tok = AutoTokenizer.from_pretrained(str(self.DEFAULT_TOKENIZER_DIR), local_files_only=True)
-                logger.info("Loaded offline HuggingFace Llama-family tokenizer from %s", self.DEFAULT_TOKENIZER_DIR)
+                tok = AutoTokenizer.from_pretrained(str(tok_dir), local_files_only=True)
+                logger.info("Loaded offline HuggingFace Llama-family tokenizer from %s", tok_dir)
                 return tok
             except Exception as exc:
                 logger.warning("Failed to load local HF tokenizer (%s); falling back to CyberLlamaTokenizer", exc)

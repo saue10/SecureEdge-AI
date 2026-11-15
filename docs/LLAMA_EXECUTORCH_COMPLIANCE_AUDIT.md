@@ -55,15 +55,9 @@ This audit strictly distinguishes between **architecture-class similarity** and 
 
 ## 5. Exact Resolution Steps on Linux / ARM64 Target
 
-Once on a Linux x86_64 or Raspberry Pi 5 (`aarch64`) environment with `HF_TOKEN` configured (`deployment/raspberry_pi/setup_rpi5.sh`):
+Once on a Linux x86_64 or Raspberry Pi 5 (`aarch64`) environment with `HF_TOKEN` configured, run the reproducible export script [`deployment/linux/export_meta_llama_executorch.sh`](../deployment/linux/export_meta_llama_executorch.sh) (or `deployment/raspberry_pi/setup_rpi5.sh`):
 ```bash
 export HF_TOKEN=<your_license_approved_hf_token>
-pip install executorch torchao
-python -m executorch.examples.models.llama.export_llama \
-  --model llama3_2 \
-  --checkpoint meta-llama/Llama-3.2-1B-Instruct \
-  -q 8da4w \
-  -d xnnpack \
-  -o models/llama_executorch/llama_3_2_1b_8da4w.pte
+bash deployment/linux/export_meta_llama_executorch.sh
 ```
-`ExecuTorchLlamaRuntime` (`src/executorch/runtime.py`) will automatically prefer `executorch.runtime.Runtime` on Linux/ARM64 when `executorch` is installed.
+`ExecuTorchLlamaRuntime` (`src/executorch/runtime.py`) and `LlamaCyberAdvisor` (`src/llama/advisor.py`) automatically detect `llama_3_2_1b_8da4w.pte` + `tokenizer_llama_3_2_1b/` and execute through `executorch.runtime.Runtime` on Linux/ARM64 when `executorch` is installed.

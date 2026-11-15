@@ -24,6 +24,8 @@ class ExecuTorchLlamaRuntime:
     graph execution on Windows hosts where torch>=2.10 VC++ dependencies are unavailable.
     """
 
+    OFFICIAL_META_LLAMA_PTE = LLAMA_MODEL_DIR / "llama_3_2_1b_8da4w.pte"
+    OFFICIAL_META_LLAMA_META = LLAMA_MODEL_DIR / "llama_3_2_1b_export_metadata.json"
     DEFAULT_PTE_PATH = LLAMA_MODEL_DIR / "smollm2_135m_cyber_advisor.pte"
     DEFAULT_PT2_PATH = LLAMA_MODEL_DIR / "smollm2_135m_cyber_advisor.pt2"
     DEFAULT_META_PATH = LLAMA_MODEL_DIR / "export_metadata.json"
@@ -34,9 +36,20 @@ class ExecuTorchLlamaRuntime:
         pt2_path: Optional[Path] = None,
         meta_path: Optional[Path] = None,
     ) -> None:
-        self.pte_path = Path(pte_path) if pte_path else self.DEFAULT_PTE_PATH
+        if pte_path is not None:
+            self.pte_path = Path(pte_path)
+        elif self.OFFICIAL_META_LLAMA_PTE.exists():
+            self.pte_path = self.OFFICIAL_META_LLAMA_PTE
+        else:
+            self.pte_path = self.DEFAULT_PTE_PATH
+
         self.pt2_path = Path(pt2_path) if pt2_path else self.DEFAULT_PT2_PATH
-        self.meta_path = Path(meta_path) if meta_path else self.DEFAULT_META_PATH
+        if meta_path is not None:
+            self.meta_path = Path(meta_path)
+        elif self.pte_path == self.OFFICIAL_META_LLAMA_PTE and self.OFFICIAL_META_LLAMA_META.exists():
+            self.meta_path = self.OFFICIAL_META_LLAMA_META
+        else:
+            self.meta_path = self.DEFAULT_META_PATH
 
         self.exported_program: Any = None
         self.compiled_module: Any = None
