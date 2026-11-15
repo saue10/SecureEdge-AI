@@ -1,0 +1,795 @@
+{
+  "metadata": {
+    "random_seed": 42,
+    "python_version": "3.13.2",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "scikit_learn_version": "1.8.0",
+    "pandas_version": "3.0.1",
+    "numpy_version": "2.3.4",
+    "note": "All evaluations run strictly on deduplicated/grouped splits of existing project datasets (synthetic/templated origin disclosed)."
+  },
+  "sms_evaluation": {
+    "dataset_sha256": "59f9bc5a5bd85d05f5fac5c5c03c8e566e6b3edeacfbf11e39433330e2f60fdc",
+    "raw_rows": 1200,
+    "removed_duplicate_rows": 390,
+    "removed_by_category": {
+      "ham": 306,
+      "spam": 84
+    },
+    "unique_normalized_rows": 810,
+    "unique_template_groups": 40,
+    "label_conflicts": 0,
+    "clean_category_counts": {
+      "scam": 514,
+      "ham": 294,
+      "spam": 2
+    },
+    "split_a_exact_dedup_stratified": {
+      "split_name": "Exact-Dedup Stratified 70/15/15",
+      "train_rows": 567,
+      "val_rows": 121,
+      "test_rows": 122,
+      "train_groups": 36,
+      "val_groups": 29,
+      "test_groups": 32,
+      "normalized_text_overlap": 0,
+      "template_group_overlap": 28,
+      "models": {
+        "RandomForest_Combined": {
+          "threshold": 0.25,
+          "accuracy": 0.9836,
+          "precision_pos": 0.975,
+          "recall_pos": 1.0,
+          "macro_f1": 0.982,
+          "weighted_f1": 0.9835,
+          "per_class_f1": {
+            "ham": 0.9767,
+            "scam_spam": 0.9873
+          },
+          "fpr": 0.0455,
+          "fnr": 0.0,
+          "brier_score": 0.002,
+          "confusion_matrix": {
+            "tn": 42,
+            "fp": 2,
+            "fn": 0,
+            "tp": 78
+          },
+          "low_confidence_uncertain_count": 0,
+          "val_threshold_info": {
+            "selected_threshold": 0.25,
+            "val_objective_score": 1.5
+          },
+          "otp_false_positives": 0,
+          "otp_total_test": 6,
+          "personal_ham_false_positives": 2,
+          "personal_ham_total_test": 38,
+          "mean_latency_ms": 61.706,
+          "model_size_kb": 32.58
+        },
+        "LogReg_Word_TFIDF": {
+          "threshold": 0.25,
+          "accuracy": 0.9672,
+          "precision_pos": 0.9512,
+          "recall_pos": 1.0,
+          "macro_f1": 0.9637,
+          "weighted_f1": 0.9668,
+          "per_class_f1": {
+            "ham": 0.9524,
+            "scam_spam": 0.975
+          },
+          "fpr": 0.0909,
+          "fnr": 0.0,
+          "brier_score": 0.009,
+          "confusion_matrix": {
+            "tn": 40,
+            "fp": 4,
+            "fn": 0,
+            "tp": 78
+          },
+          "low_confidence_uncertain_count": 4,
+          "val_threshold_info": {
+            "selected_threshold": 0.25,
+            "val_objective_score": 1.5
+          },
+          "otp_false_positives": 0,
+          "otp_total_test": 6,
+          "personal_ham_false_positives": 4,
+          "personal_ham_total_test": 38,
+          "mean_latency_ms": 0.115,
+          "model_size_kb": 2.5
+        },
+        "LogReg_Char_TFIDF": {
+          "threshold": 0.25,
+          "accuracy": 0.9672,
+          "precision_pos": 0.9512,
+          "recall_pos": 1.0,
+          "macro_f1": 0.9637,
+          "weighted_f1": 0.9668,
+          "per_class_f1": {
+            "ham": 0.9524,
+            "scam_spam": 0.975
+          },
+          "fpr": 0.0909,
+          "fnr": 0.0,
+          "brier_score": 0.007,
+          "confusion_matrix": {
+            "tn": 40,
+            "fp": 4,
+            "fn": 0,
+            "tp": 78
+          },
+          "low_confidence_uncertain_count": 1,
+          "val_threshold_info": {
+            "selected_threshold": 0.25,
+            "val_objective_score": 1.5
+          },
+          "otp_false_positives": 0,
+          "otp_total_test": 6,
+          "personal_ham_false_positives": 4,
+          "personal_ham_total_test": 38,
+          "mean_latency_ms": 0.081,
+          "model_size_kb": 5.9
+        },
+        "LogReg_Combined_TFIDF": {
+          "threshold": 0.25,
+          "accuracy": 0.9836,
+          "precision_pos": 0.975,
+          "recall_pos": 1.0,
+          "macro_f1": 0.982,
+          "weighted_f1": 0.9835,
+          "per_class_f1": {
+            "ham": 0.9767,
+            "scam_spam": 0.9873
+          },
+          "fpr": 0.0455,
+          "fnr": 0.0,
+          "brier_score": 0.0033,
+          "confusion_matrix": {
+            "tn": 42,
+            "fp": 2,
+            "fn": 0,
+            "tp": 78
+          },
+          "low_confidence_uncertain_count": 1,
+          "val_threshold_info": {
+            "selected_threshold": 0.25,
+            "val_objective_score": 1.5
+          },
+          "otp_false_positives": 0,
+          "otp_total_test": 6,
+          "personal_ham_false_positives": 2,
+          "personal_ham_total_test": 38,
+          "mean_latency_ms": 0.09,
+          "model_size_kb": 7.9
+        },
+        "Calibrated_LinearSVC": {
+          "threshold": 0.25,
+          "accuracy": 0.9836,
+          "precision_pos": 0.975,
+          "recall_pos": 1.0,
+          "macro_f1": 0.982,
+          "weighted_f1": 0.9835,
+          "per_class_f1": {
+            "ham": 0.9767,
+            "scam_spam": 0.9873
+          },
+          "fpr": 0.0455,
+          "fnr": 0.0,
+          "brier_score": 0.0025,
+          "confusion_matrix": {
+            "tn": 42,
+            "fp": 2,
+            "fn": 0,
+            "tp": 78
+          },
+          "low_confidence_uncertain_count": 0,
+          "val_threshold_info": {
+            "selected_threshold": 0.25,
+            "val_objective_score": 1.5
+          },
+          "otp_false_positives": 0,
+          "otp_total_test": 6,
+          "personal_ham_false_positives": 2,
+          "personal_ham_total_test": 38,
+          "mean_latency_ms": 1.449,
+          "model_size_kb": 19.93
+        }
+      }
+    },
+    "split_b_template_grouped": {
+      "split_name": "Near-Dup Template-Grouped 70/15/15",
+      "train_rows": 547,
+      "val_rows": 168,
+      "test_rows": 95,
+      "train_groups": 28,
+      "val_groups": 6,
+      "test_groups": 6,
+      "normalized_text_overlap": 0,
+      "template_group_overlap": 0,
+      "models": {
+        "RandomForest_Combined": {
+          "threshold": 0.52,
+          "accuracy": 1.0,
+          "precision_pos": 1.0,
+          "recall_pos": 1.0,
+          "macro_f1": 1.0,
+          "weighted_f1": 1.0,
+          "per_class_f1": {
+            "ham": 1.0,
+            "scam_spam": 1.0
+          },
+          "fpr": 0.0,
+          "fnr": 0.0,
+          "brier_score": 0.0807,
+          "confusion_matrix": {
+            "tn": 37,
+            "fp": 0,
+            "fn": 0,
+            "tp": 58
+          },
+          "low_confidence_uncertain_count": 0,
+          "val_threshold_info": {
+            "selected_threshold": 0.52,
+            "val_objective_score": 1.5
+          },
+          "otp_false_positives": 0,
+          "otp_total_test": 13,
+          "personal_ham_false_positives": 0,
+          "personal_ham_total_test": 24,
+          "mean_latency_ms": 42.798,
+          "model_size_kb": 28.59
+        },
+        "LogReg_Word_TFIDF": {
+          "threshold": 0.51,
+          "accuracy": 1.0,
+          "precision_pos": 1.0,
+          "recall_pos": 1.0,
+          "macro_f1": 1.0,
+          "weighted_f1": 1.0,
+          "per_class_f1": {
+            "ham": 1.0,
+            "scam_spam": 1.0
+          },
+          "fpr": 0.0,
+          "fnr": 0.0,
+          "brier_score": 0.0481,
+          "confusion_matrix": {
+            "tn": 37,
+            "fp": 0,
+            "fn": 0,
+            "tp": 58
+          },
+          "low_confidence_uncertain_count": 0,
+          "val_threshold_info": {
+            "selected_threshold": 0.51,
+            "val_objective_score": 1.5
+          },
+          "otp_false_positives": 0,
+          "otp_total_test": 13,
+          "personal_ham_false_positives": 0,
+          "personal_ham_total_test": 24,
+          "mean_latency_ms": 0.085,
+          "model_size_kb": 2.02
+        },
+        "LogReg_Char_TFIDF": {
+          "threshold": 0.34,
+          "accuracy": 0.8842,
+          "precision_pos": 0.8406,
+          "recall_pos": 1.0,
+          "macro_f1": 0.8694,
+          "weighted_f1": 0.8791,
+          "per_class_f1": {
+            "ham": 0.8254,
+            "scam_spam": 0.9134
+          },
+          "fpr": 0.2973,
+          "fnr": 0.0,
+          "brier_score": 0.0426,
+          "confusion_matrix": {
+            "tn": 26,
+            "fp": 11,
+            "fn": 0,
+            "tp": 58
+          },
+          "low_confidence_uncertain_count": 11,
+          "val_threshold_info": {
+            "selected_threshold": 0.34,
+            "val_objective_score": 0.9861
+          },
+          "otp_false_positives": 0,
+          "otp_total_test": 13,
+          "personal_ham_false_positives": 11,
+          "personal_ham_total_test": 24,
+          "mean_latency_ms": 0.101,
+          "model_size_kb": 6.08
+        },
+        "LogReg_Combined_TFIDF": {
+          "threshold": 0.25,
+          "accuracy": 1.0,
+          "precision_pos": 1.0,
+          "recall_pos": 1.0,
+          "macro_f1": 1.0,
+          "weighted_f1": 1.0,
+          "per_class_f1": {
+            "ham": 1.0,
+            "scam_spam": 1.0
+          },
+          "fpr": 0.0,
+          "fnr": 0.0,
+          "brier_score": 0.0089,
+          "confusion_matrix": {
+            "tn": 37,
+            "fp": 0,
+            "fn": 0,
+            "tp": 58
+          },
+          "low_confidence_uncertain_count": 0,
+          "val_threshold_info": {
+            "selected_threshold": 0.25,
+            "val_objective_score": 0.9861
+          },
+          "otp_false_positives": 0,
+          "otp_total_test": 13,
+          "personal_ham_false_positives": 0,
+          "personal_ham_total_test": 24,
+          "mean_latency_ms": 0.121,
+          "model_size_kb": 7.59
+        },
+        "Calibrated_LinearSVC": {
+          "threshold": 0.25,
+          "accuracy": 1.0,
+          "precision_pos": 1.0,
+          "recall_pos": 1.0,
+          "macro_f1": 1.0,
+          "weighted_f1": 1.0,
+          "per_class_f1": {
+            "ham": 1.0,
+            "scam_spam": 1.0
+          },
+          "fpr": 0.0,
+          "fnr": 0.0,
+          "brier_score": 0.0232,
+          "confusion_matrix": {
+            "tn": 37,
+            "fp": 0,
+            "fn": 0,
+            "tp": 58
+          },
+          "low_confidence_uncertain_count": 0,
+          "val_threshold_info": {
+            "selected_threshold": 0.25,
+            "val_objective_score": 0.9861
+          },
+          "otp_false_positives": 0,
+          "otp_total_test": 13,
+          "personal_ham_false_positives": 0,
+          "personal_ham_total_test": 24,
+          "mean_latency_ms": 1.14,
+          "model_size_kb": 18.06
+        }
+      }
+    }
+  },
+  "url_evaluation": {
+    "dataset_sha256": "5c62bb110d8617fbe13de964e1837d4d1f2af27d892dbd23cf7b42e811bd6d1f",
+    "raw_rows": 1600,
+    "removed_duplicate_rows": 4,
+    "unique_normalized_rows": 1596,
+    "unique_registered_domains": 1200,
+    "train_rows": 1135,
+    "val_rows": 229,
+    "test_rows": 232,
+    "domain_overlap": 0,
+    "models": {
+      "RandomForest_Calibrated": {
+        "threshold": 0.25,
+        "accuracy": 1.0,
+        "precision_pos": 1.0,
+        "recall_pos": 1.0,
+        "macro_f1": 1.0,
+        "weighted_f1": 1.0,
+        "per_class_f1": {
+          "benign": 1.0,
+          "phishing": 1.0
+        },
+        "fpr": 0.0,
+        "fnr": 0.0,
+        "brier_score": 0.0002,
+        "confusion_matrix": {
+          "tn": 106,
+          "fp": 0,
+          "fn": 0,
+          "tp": 126
+        },
+        "low_confidence_uncertain_count": 0,
+        "val_threshold_info": {
+          "selected_threshold": 0.25,
+          "val_objective_score": 1.5
+        },
+        "subgroup_accuracy": {
+          "punycode": {
+            "count": 16,
+            "accuracy": 1.0
+          },
+          "raw_ip": {
+            "count": 21,
+            "accuracy": 1.0
+          },
+          "suspicious_subdomain": {
+            "count": 26,
+            "accuracy": 1.0
+          },
+          "brand_impersonation": {
+            "count": 60,
+            "accuracy": 1.0
+          },
+          "hard_negative_benign": {
+            "count": 13,
+            "accuracy": 1.0
+          },
+          "stealth_phishing": {
+            "count": 17,
+            "accuracy": 1.0
+          }
+        },
+        "mean_latency_ms": 88.44,
+        "model_size_kb": 246.75
+      },
+      "LogisticRegression": {
+        "threshold": 0.57,
+        "accuracy": 1.0,
+        "precision_pos": 1.0,
+        "recall_pos": 1.0,
+        "macro_f1": 1.0,
+        "weighted_f1": 1.0,
+        "per_class_f1": {
+          "benign": 1.0,
+          "phishing": 1.0
+        },
+        "fpr": 0.0,
+        "fnr": 0.0,
+        "brier_score": 0.0046,
+        "confusion_matrix": {
+          "tn": 106,
+          "fp": 0,
+          "fn": 0,
+          "tp": 126
+        },
+        "low_confidence_uncertain_count": 0,
+        "val_threshold_info": {
+          "selected_threshold": 0.57,
+          "val_objective_score": 1.4956
+        },
+        "subgroup_accuracy": {
+          "punycode": {
+            "count": 16,
+            "accuracy": 1.0
+          },
+          "raw_ip": {
+            "count": 21,
+            "accuracy": 1.0
+          },
+          "suspicious_subdomain": {
+            "count": 26,
+            "accuracy": 1.0
+          },
+          "brand_impersonation": {
+            "count": 60,
+            "accuracy": 1.0
+          },
+          "hard_negative_benign": {
+            "count": 13,
+            "accuracy": 1.0
+          },
+          "stealth_phishing": {
+            "count": 17,
+            "accuracy": 1.0
+          }
+        },
+        "mean_latency_ms": 0.064,
+        "model_size_kb": 0.8
+      },
+      "HistGradientBoosting": {
+        "threshold": 0.25,
+        "accuracy": 1.0,
+        "precision_pos": 1.0,
+        "recall_pos": 1.0,
+        "macro_f1": 1.0,
+        "weighted_f1": 1.0,
+        "per_class_f1": {
+          "benign": 1.0,
+          "phishing": 1.0
+        },
+        "fpr": 0.0,
+        "fnr": 0.0,
+        "brier_score": 0.0,
+        "confusion_matrix": {
+          "tn": 106,
+          "fp": 0,
+          "fn": 0,
+          "tp": 126
+        },
+        "low_confidence_uncertain_count": 0,
+        "val_threshold_info": {
+          "selected_threshold": 0.25,
+          "val_objective_score": 1.5
+        },
+        "subgroup_accuracy": {
+          "punycode": {
+            "count": 16,
+            "accuracy": 1.0
+          },
+          "raw_ip": {
+            "count": 21,
+            "accuracy": 1.0
+          },
+          "suspicious_subdomain": {
+            "count": 26,
+            "accuracy": 1.0
+          },
+          "brand_impersonation": {
+            "count": 60,
+            "accuracy": 1.0
+          },
+          "hard_negative_benign": {
+            "count": 13,
+            "accuracy": 1.0
+          },
+          "stealth_phishing": {
+            "count": 17,
+            "accuracy": 1.0
+          }
+        },
+        "mean_latency_ms": 1.25,
+        "model_size_kb": 88.21
+      }
+    }
+  },
+  "network_evaluation": {
+    "dataset_sha256": "619fa550d227a8c89642e887b541ca11e74fadd369fe0418ee34235bdd249862",
+    "raw_rows": 1500,
+    "exact_duplicates": 0,
+    "attack_type_counts": {
+      "benign_https": 125,
+      "stealth_low_slow_probe": 125,
+      "syn_flood_dos": 125,
+      "benign_microservice_burst": 125,
+      "port_scan": 125,
+      "benign_ntp": 125,
+      "data_exfiltration_anomaly": 125,
+      "benign_dns": 125,
+      "brute_force_probe": 125,
+      "c2_backdoor_channel": 125,
+      "benign_http": 125,
+      "benign_ssh_session": 125
+    },
+    "top_label_correlations": {
+      "syn_flag_ratio": 0.525,
+      "connection_frequency": 0.5089,
+      "protocol_id": 0.4472,
+      "is_sensitive_admin_port": 0.4285,
+      "rst_flag_ratio": 0.4181,
+      "dst_port": 0.3772
+    },
+    "highly_correlated_feature_pairs": [
+      {
+        "f1": "packet_count",
+        "f2": "byte_count",
+        "abs_r": 0.9642
+      },
+      {
+        "f1": "packet_count",
+        "f2": "bytes_per_sec",
+        "abs_r": 0.9097
+      },
+      {
+        "f1": "byte_count",
+        "f2": "bytes_per_sec",
+        "abs_r": 0.9306
+      },
+      {
+        "f1": "syn_flag_ratio",
+        "f2": "payload_byte_ratio",
+        "abs_r": 0.8629
+      }
+    ],
+    "split_a_src_ip_grouped": {
+      "split_name": "SrcIP-Grouped 70/15/15",
+      "train_rows": 1177,
+      "val_rows": 165,
+      "test_rows": 158,
+      "test_scenarios": [
+        "benign_dns",
+        "benign_http",
+        "benign_https",
+        "benign_ntp",
+        "brute_force_probe",
+        "port_scan",
+        "syn_flood_dos"
+      ],
+      "models": {
+        "RandomForest_Calibrated": {
+          "threshold": 0.25,
+          "accuracy": 1.0,
+          "precision_pos": 1.0,
+          "recall_pos": 1.0,
+          "macro_f1": 1.0,
+          "weighted_f1": 1.0,
+          "per_class_f1": {
+            "benign_flow": 1.0,
+            "anomaly_flow": 1.0
+          },
+          "fpr": 0.0,
+          "fnr": 0.0,
+          "brier_score": 0.0001,
+          "confusion_matrix": {
+            "tn": 60,
+            "fp": 0,
+            "fn": 0,
+            "tp": 98
+          },
+          "low_confidence_uncertain_count": 0,
+          "val_threshold_info": {
+            "selected_threshold": 0.25,
+            "val_objective_score": 1.5
+          },
+          "mean_latency_ms": 109.639,
+          "model_size_kb": 188.21
+        },
+        "HistGradientBoosting": {
+          "threshold": 0.25,
+          "accuracy": 1.0,
+          "precision_pos": 1.0,
+          "recall_pos": 1.0,
+          "macro_f1": 1.0,
+          "weighted_f1": 1.0,
+          "per_class_f1": {
+            "benign_flow": 1.0,
+            "anomaly_flow": 1.0
+          },
+          "fpr": 0.0,
+          "fnr": 0.0,
+          "brier_score": 0.0,
+          "confusion_matrix": {
+            "tn": 60,
+            "fp": 0,
+            "fn": 0,
+            "tp": 98
+          },
+          "low_confidence_uncertain_count": 0,
+          "val_threshold_info": {
+            "selected_threshold": 0.25,
+            "val_objective_score": 1.5
+          },
+          "mean_latency_ms": 1.466,
+          "model_size_kb": 84.38
+        },
+        "LogisticRegression": {
+          "threshold": 0.4,
+          "accuracy": 0.981,
+          "precision_pos": 0.9703,
+          "recall_pos": 1.0,
+          "macro_f1": 0.9796,
+          "weighted_f1": 0.9809,
+          "per_class_f1": {
+            "benign_flow": 0.9744,
+            "anomaly_flow": 0.9849
+          },
+          "fpr": 0.05,
+          "fnr": 0.0,
+          "brier_score": 0.0103,
+          "confusion_matrix": {
+            "tn": 57,
+            "fp": 3,
+            "fn": 0,
+            "tp": 98
+          },
+          "low_confidence_uncertain_count": 4,
+          "val_threshold_info": {
+            "selected_threshold": 0.4,
+            "val_objective_score": 1.5
+          },
+          "mean_latency_ms": 0.065,
+          "model_size_kb": 0.69
+        }
+      }
+    },
+    "split_b_unseen_scenario_grouped": {
+      "split_name": "Unseen-Scenario Grouped (attack_type)",
+      "train_rows": 1000,
+      "val_rows": 250,
+      "test_rows": 250,
+      "test_scenarios": [
+        "data_exfiltration_anomaly",
+        "stealth_low_slow_probe"
+      ],
+      "models": {
+        "RandomForest_Calibrated": {
+          "threshold": 0.25,
+          "accuracy": 0.5,
+          "precision_pos": 1.0,
+          "recall_pos": 0.5,
+          "macro_f1": 0.3333,
+          "weighted_f1": 0.6667,
+          "per_class_f1": {
+            "benign_flow": 0.0,
+            "anomaly_flow": 0.6667
+          },
+          "fpr": 0.0,
+          "fnr": 0.5,
+          "brier_score": 0.495,
+          "confusion_matrix": {
+            "tn": 0,
+            "fp": 0,
+            "fn": 125,
+            "tp": 125
+          },
+          "low_confidence_uncertain_count": 4,
+          "val_threshold_info": {
+            "selected_threshold": 0.25,
+            "val_objective_score": 1.5
+          },
+          "mean_latency_ms": 81.629,
+          "model_size_kb": 125.84
+        },
+        "HistGradientBoosting": {
+          "threshold": 0.25,
+          "accuracy": 0.36,
+          "precision_pos": 1.0,
+          "recall_pos": 0.36,
+          "macro_f1": 0.2647,
+          "weighted_f1": 0.5294,
+          "per_class_f1": {
+            "benign_flow": 0.0,
+            "anomaly_flow": 0.5294
+          },
+          "fpr": 0.0,
+          "fnr": 0.64,
+          "brier_score": 0.64,
+          "confusion_matrix": {
+            "tn": 0,
+            "fp": 0,
+            "fn": 160,
+            "tp": 90
+          },
+          "low_confidence_uncertain_count": 0,
+          "val_threshold_info": {
+            "selected_threshold": 0.25,
+            "val_objective_score": 1.492
+          },
+          "mean_latency_ms": 1.407,
+          "model_size_kb": 28.99
+        },
+        "LogisticRegression": {
+          "threshold": 0.25,
+          "accuracy": 0.036,
+          "precision_pos": 1.0,
+          "recall_pos": 0.036,
+          "macro_f1": 0.0347,
+          "weighted_f1": 0.0695,
+          "per_class_f1": {
+            "benign_flow": 0.0,
+            "anomaly_flow": 0.0695
+          },
+          "fpr": 0.0,
+          "fnr": 0.964,
+          "brier_score": 0.959,
+          "confusion_matrix": {
+            "tn": 0,
+            "fp": 0,
+            "fn": 241,
+            "tp": 9
+          },
+          "low_confidence_uncertain_count": 4,
+          "val_threshold_info": {
+            "selected_threshold": 0.25,
+            "val_objective_score": 0.3333
+          },
+          "mean_latency_ms": 0.067,
+          "model_size_kb": 0.69
+        }
+      }
+    }
+  }
+}
