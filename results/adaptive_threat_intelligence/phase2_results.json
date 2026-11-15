@@ -1,0 +1,628 @@
+{
+  "environment": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.13.2",
+    "seed": 42
+  },
+  "network_known_vs_unseen": {
+    "unseen_benign_scenarios": [
+      "benign_ssh_session",
+      "benign_microservice_burst"
+    ],
+    "unseen_attack_scenarios": [
+      "data_exfiltration_anomaly",
+      "stealth_low_slow_probe"
+    ],
+    "adaptive_detector": {
+      "known_scenarios": {
+        "alert_mode_metrics": {
+          "accuracy": 0.956,
+          "precision": 0.9141,
+          "recall": 1.0,
+          "macro_f1": 0.956,
+          "per_class_f1": {
+            "benign": 0.9569,
+            "threat": 0.9551
+          },
+          "fpr": 0.0827,
+          "fnr": 0.0,
+          "confusion_matrix": {
+            "tn": 122,
+            "fp": 11,
+            "fn": 0,
+            "tp": 117
+          }
+        },
+        "strict_malicious_metrics": {
+          "accuracy": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "macro_f1": 1.0,
+          "per_class_f1": {
+            "benign": 1.0,
+            "threat": 1.0
+          },
+          "fpr": 0.0,
+          "fnr": 0.0,
+          "confusion_matrix": {
+            "tn": 133,
+            "fp": 0,
+            "fn": 0,
+            "tp": 117
+          }
+        },
+        "per_scenario_states": {
+          "benign_dns": {
+            "count": 36,
+            "confirmed_malicious": 0,
+            "suspicious_unknown": 0,
+            "normal": 36
+          },
+          "benign_http": {
+            "count": 33,
+            "confirmed_malicious": 0,
+            "suspicious_unknown": 6,
+            "normal": 27
+          },
+          "benign_https": {
+            "count": 37,
+            "confirmed_malicious": 0,
+            "suspicious_unknown": 5,
+            "normal": 32
+          },
+          "benign_ntp": {
+            "count": 27,
+            "confirmed_malicious": 0,
+            "suspicious_unknown": 0,
+            "normal": 27
+          },
+          "brute_force_probe": {
+            "count": 28,
+            "confirmed_malicious": 28,
+            "suspicious_unknown": 0,
+            "normal": 0
+          },
+          "c2_backdoor_channel": {
+            "count": 27,
+            "confirmed_malicious": 27,
+            "suspicious_unknown": 0,
+            "normal": 0
+          },
+          "port_scan": {
+            "count": 28,
+            "confirmed_malicious": 28,
+            "suspicious_unknown": 0,
+            "normal": 0
+          },
+          "syn_flood_dos": {
+            "count": 34,
+            "confirmed_malicious": 34,
+            "suspicious_unknown": 0,
+            "normal": 0
+          }
+        },
+        "p50_latency_ms": 16.444,
+        "p95_latency_ms": 21.256
+      },
+      "unseen_scenarios": {
+        "alert_mode_metrics": {
+          "accuracy": 0.584,
+          "precision": 0.5461,
+          "recall": 0.996,
+          "macro_f1": 0.4989,
+          "per_class_f1": {
+            "benign": 0.2925,
+            "threat": 0.7054
+          },
+          "fpr": 0.828,
+          "fnr": 0.004,
+          "confusion_matrix": {
+            "tn": 43,
+            "fp": 207,
+            "fn": 1,
+            "tp": 249
+          }
+        },
+        "strict_malicious_metrics": {
+          "accuracy": 0.644,
+          "precision": 0.6324,
+          "recall": 0.688,
+          "macro_f1": 0.6433,
+          "per_class_f1": {
+            "benign": 0.6276,
+            "threat": 0.659
+          },
+          "fpr": 0.4,
+          "fnr": 0.312,
+          "confusion_matrix": {
+            "tn": 150,
+            "fp": 100,
+            "fn": 78,
+            "tp": 172
+          }
+        },
+        "per_scenario_states": {
+          "benign_microservice_burst": {
+            "count": 125,
+            "confirmed_malicious": 100,
+            "suspicious_unknown": 25,
+            "normal": 0
+          },
+          "benign_ssh_session": {
+            "count": 125,
+            "confirmed_malicious": 0,
+            "suspicious_unknown": 82,
+            "normal": 43
+          },
+          "data_exfiltration_anomaly": {
+            "count": 125,
+            "confirmed_malicious": 107,
+            "suspicious_unknown": 18,
+            "normal": 0
+          },
+          "stealth_low_slow_probe": {
+            "count": 125,
+            "confirmed_malicious": 65,
+            "suspicious_unknown": 59,
+            "normal": 1
+          }
+        },
+        "p50_latency_ms": 17.316,
+        "p95_latency_ms": 26.735
+      }
+    },
+    "baselines": {
+      "RandomForest": {
+        "known_scenarios": {
+          "accuracy": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "macro_f1": 1.0,
+          "per_class_f1": {
+            "benign": 1.0,
+            "threat": 1.0
+          },
+          "fpr": 0.0,
+          "fnr": 0.0,
+          "confusion_matrix": {
+            "tn": 133,
+            "fp": 0,
+            "fn": 0,
+            "tp": 117
+          }
+        },
+        "unseen_scenarios": {
+          "accuracy": 0.732,
+          "precision": 0.6585,
+          "recall": 0.964,
+          "macro_f1": 0.7168,
+          "per_class_f1": {
+            "benign": 0.651,
+            "threat": 0.7825
+          },
+          "fpr": 0.5,
+          "fnr": 0.036,
+          "confusion_matrix": {
+            "tn": 125,
+            "fp": 125,
+            "fn": 9,
+            "tp": 241
+          },
+          "roc_auc": 0.5784
+        }
+      },
+      "HistGradientBoosting": {
+        "known_scenarios": {
+          "accuracy": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "macro_f1": 1.0,
+          "per_class_f1": {
+            "benign": 1.0,
+            "threat": 1.0
+          },
+          "fpr": 0.0,
+          "fnr": 0.0,
+          "confusion_matrix": {
+            "tn": 133,
+            "fp": 0,
+            "fn": 0,
+            "tp": 117
+          }
+        },
+        "unseen_scenarios": {
+          "accuracy": 0.644,
+          "precision": 0.6324,
+          "recall": 0.688,
+          "macro_f1": 0.6433,
+          "per_class_f1": {
+            "benign": 0.6276,
+            "threat": 0.659
+          },
+          "fpr": 0.4,
+          "fnr": 0.312,
+          "confusion_matrix": {
+            "tn": 150,
+            "fp": 100,
+            "fn": 78,
+            "tp": 172
+          },
+          "roc_auc": 0.644
+        }
+      },
+      "LogisticRegression": {
+        "known_scenarios": {
+          "accuracy": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "macro_f1": 1.0,
+          "per_class_f1": {
+            "benign": 1.0,
+            "threat": 1.0
+          },
+          "fpr": 0.0,
+          "fnr": 0.0,
+          "confusion_matrix": {
+            "tn": 133,
+            "fp": 0,
+            "fn": 0,
+            "tp": 117
+          }
+        },
+        "unseen_scenarios": {
+          "accuracy": 0.662,
+          "precision": 0.6224,
+          "recall": 0.824,
+          "macro_f1": 0.6529,
+          "per_class_f1": {
+            "benign": 0.5967,
+            "threat": 0.7091
+          },
+          "fpr": 0.5,
+          "fnr": 0.176,
+          "confusion_matrix": {
+            "tn": 125,
+            "fp": 125,
+            "fn": 44,
+            "tp": 206
+          },
+          "roc_auc": 0.5392
+        }
+      },
+      "IsolationForest_Raw": {
+        "known_scenarios": {
+          "accuracy": 0.864,
+          "precision": 0.9278,
+          "recall": 0.7692,
+          "macro_f1": 0.8611,
+          "per_class_f1": {
+            "benign": 0.8811,
+            "threat": 0.8411
+          },
+          "fpr": 0.0526,
+          "fnr": 0.2308,
+          "confusion_matrix": {
+            "tn": 126,
+            "fp": 7,
+            "fn": 27,
+            "tp": 90
+          }
+        },
+        "unseen_scenarios": {
+          "accuracy": 0.75,
+          "precision": 0.6667,
+          "recall": 1.0,
+          "macro_f1": 0.7333,
+          "per_class_f1": {
+            "benign": 0.6667,
+            "threat": 0.8
+          },
+          "fpr": 0.5,
+          "fnr": 0.0,
+          "confusion_matrix": {
+            "tn": 125,
+            "fp": 125,
+            "fn": 0,
+            "tp": 250
+          },
+          "roc_auc": 0.8288
+        }
+      },
+      "LOF_Novelty_Raw": {
+        "known_scenarios": {
+          "accuracy": 0.956,
+          "precision": 0.9141,
+          "recall": 1.0,
+          "macro_f1": 0.956,
+          "per_class_f1": {
+            "benign": 0.9569,
+            "threat": 0.9551
+          },
+          "fpr": 0.0827,
+          "fnr": 0.0,
+          "confusion_matrix": {
+            "tn": 122,
+            "fp": 11,
+            "fn": 0,
+            "tp": 117
+          }
+        },
+        "unseen_scenarios": {
+          "accuracy": 0.5,
+          "precision": 0.5,
+          "recall": 1.0,
+          "macro_f1": 0.3333,
+          "per_class_f1": {
+            "benign": 0.0,
+            "threat": 0.6667
+          },
+          "fpr": 1.0,
+          "fnr": 0.0,
+          "confusion_matrix": {
+            "tn": 0,
+            "fp": 250,
+            "fn": 0,
+            "tp": 250
+          },
+          "roc_auc": 0.4644
+        }
+      },
+      "EllipticEnvelope_Raw": {
+        "known_scenarios": {
+          "accuracy": 0.972,
+          "precision": 0.9435,
+          "recall": 1.0,
+          "macro_f1": 0.972,
+          "per_class_f1": {
+            "benign": 0.973,
+            "threat": 0.971
+          },
+          "fpr": 0.0526,
+          "fnr": 0.0,
+          "confusion_matrix": {
+            "tn": 126,
+            "fp": 7,
+            "fn": 0,
+            "tp": 117
+          }
+        },
+        "unseen_scenarios": {
+          "accuracy": 0.5,
+          "precision": 0.5,
+          "recall": 1.0,
+          "macro_f1": 0.3333,
+          "per_class_f1": {
+            "benign": 0.0,
+            "threat": 0.6667
+          },
+          "fpr": 1.0,
+          "fnr": 0.0,
+          "confusion_matrix": {
+            "tn": 0,
+            "fp": 250,
+            "fn": 0,
+            "tp": 250
+          },
+          "roc_auc": 0.6251
+        }
+      }
+    }
+  },
+  "adversarial_robustness": {
+    "url_adversarial": {
+      "accuracy": 0.75,
+      "precision": 1.0,
+      "recall": 0.5714,
+      "macro_f1": 0.7483,
+      "per_class_f1": {
+        "benign": 0.7692,
+        "threat": 0.7273
+      },
+      "fpr": 0.0,
+      "fnr": 0.4286,
+      "confusion_matrix": {
+        "tn": 10,
+        "fp": 0,
+        "fn": 6,
+        "tp": 8
+      },
+      "p50_ms": 28.172,
+      "p95_ms": 33.942,
+      "misses": [
+        {
+          "url": "http://\u0440\u0430ypal-security.com/signin",
+          "tag": "unicode_confusable",
+          "true": 1,
+          "pred": 0,
+          "score": 10
+        },
+        {
+          "url": "http://icici-online-update.xyz/otp/confirm",
+          "tag": "brand_impersonation",
+          "true": 1,
+          "pred": 0,
+          "score": 12
+        },
+        {
+          "url": "https://bit.ly/3xKycVerify",
+          "tag": "url_shortener",
+          "true": 1,
+          "pred": 0,
+          "score": 7
+        },
+        {
+          "url": "http://a.b.c.d.e.f.sbi-login-secure.info/portal",
+          "tag": "excessive_subdomains",
+          "true": 1,
+          "pred": 0,
+          "score": 11
+        },
+        {
+          "url": "HtTp://PaYpAl-SeCuRe-UpDaTe.CoM/LoGiN?id=99",
+          "tag": "mixed_case_obfuscation",
+          "true": 1,
+          "pred": 0,
+          "score": 11
+        },
+        {
+          "url": "https://tinyurl.com/sbi-reward-claim",
+          "tag": "shortener_brand",
+          "true": 1,
+          "pred": 0,
+          "score": 13
+        }
+      ]
+    },
+    "sms_adversarial": {
+      "accuracy": 0.4545,
+      "precision": 0.0,
+      "recall": 0.0,
+      "macro_f1": 0.3125,
+      "per_class_f1": {
+        "benign": 0.625,
+        "threat": 0.0
+      },
+      "fpr": 0.0,
+      "fnr": 1.0,
+      "confusion_matrix": {
+        "tn": 10,
+        "fp": 0,
+        "fn": 12,
+        "tp": 0
+      },
+      "p50_ms": 2.446,
+      "p95_ms": 3.486,
+      "misses": [
+        {
+          "sms": "URGENT: Your S.B.I K.Y.C is blocked! V3r1fy A/c at http://sb",
+          "tag": "leetspeak_spacing_kyc",
+          "true": 1,
+          "pred": 0,
+          "score": 19
+        },
+        {
+          "sms": "Dear user, U.P.I cashback Rs 5000 expiring! Enter U-P-I P!N ",
+          "tag": "punctuation_obfuscation",
+          "true": 1,
+          "pred": 0,
+          "score": 14
+        },
+        {
+          "sms": "A/c XX9912 will be frozen in 2 hrs. Call customer care 98765",
+          "tag": "impersonated_support",
+          "true": 1,
+          "pred": 0,
+          "score": 15
+        },
+        {
+          "sms": "Electricity power CA-4421 cut tonight 9PM. Pay pending bill ",
+          "tag": "urgent_utility_scam",
+          "true": 1,
+          "pred": 0,
+          "score": 6
+        },
+        {
+          "sms": "Aapka KYC pending hai, turant verify karein warna account ba",
+          "tag": "mixed_hinglish_scam",
+          "true": 1,
+          "pred": 0,
+          "score": 15
+        },
+        {
+          "sms": "FINAL WARNING: Share your 6-digit O T P with agent 889900112",
+          "tag": "otp_theft_spaced",
+          "true": 1,
+          "pred": 0,
+          "score": 9
+        },
+        {
+          "sms": "Congratz!! Won Rs. 10,00,000 Jio lottery. Click http://jio-w",
+          "tag": "prize_lure",
+          "true": 1,
+          "pred": 0,
+          "score": 34
+        },
+        {
+          "sms": "ICICI Bank: Your debit card is suspended. Update P.A.N detai",
+          "tag": "fake_bank_pan",
+          "true": 1,
+          "pred": 0,
+          "score": 19
+        },
+        {
+          "sms": "Customs parcel seized! Pay Rs 1,450 clearance fee at http://",
+          "tag": "customs_scam",
+          "true": 1,
+          "pred": 0,
+          "score": 13
+        },
+        {
+          "sms": "Earn Rs 5000/day liking YouTube videos! Join Telegram t.me/t",
+          "tag": "task_scam",
+          "true": 1,
+          "pred": 0,
+          "score": 13
+        },
+        {
+          "sms": "HDFC Alert: Suspicious login detected. Cancel by entering Ne",
+          "tag": "credential_theft",
+          "true": 1,
+          "pred": 0,
+          "score": 18
+        },
+        {
+          "sms": "Paytm KYC expired! Call +91-9988776655 or click http://paytm",
+          "tag": "leetspeak_paytm",
+          "true": 1,
+          "pred": 0,
+          "score": 23
+        }
+      ]
+    },
+    "network_adversarial": {
+      "accuracy": 0.9375,
+      "precision": 0.9091,
+      "recall": 1.0,
+      "macro_f1": 0.9307,
+      "per_class_f1": {
+        "benign": 0.9091,
+        "threat": 0.9524
+      },
+      "fpr": 0.1667,
+      "fnr": 0.0,
+      "confusion_matrix": {
+        "tn": 5,
+        "fp": 1,
+        "fn": 0,
+        "tp": 10
+      },
+      "p50_ms": 13.654,
+      "p95_ms": 18.668,
+      "misses": [
+        {
+          "tag": "benign_ssh_session",
+          "true": 0,
+          "pred": 1,
+          "state": "suspicious_unknown",
+          "sup": 0.0,
+          "anom": 0.008
+        }
+      ]
+    }
+  },
+  "operating_modes_benchmark": {
+    "fast_triage_no_llm": {
+      "runs": 45,
+      "p50_latency_ms": 16.291,
+      "p95_latency_ms": 36.051,
+      "rss_memory_mb": 205.07
+    },
+    "deep_analysis_with_local_llm": {
+      "runs": 3,
+      "p50_latency_ms": 4142.068,
+      "p95_latency_ms": 20559.422,
+      "rss_memory_mb": 1085.48,
+      "llm_backend": "torch.export.ExportedProgram (HuggingFaceTB/SmolLM2-135M-Instruct | amd64-Windows)"
+    }
+  }
+}
