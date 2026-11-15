@@ -1,0 +1,20 @@
+{
+  "seed": 42,
+  "url_dataset": {
+    "total_records": 1600,
+    "benign": 800,
+    "phishing": 800,
+    "unique_domains": 1200
+  },
+  "sms_dataset": {
+    "total_records": 1200,
+    "benign": 600,
+    "scam_or_spam": 600
+  },
+  "network_dataset": {
+    "total_records": 1500,
+    "benign": 750,
+    "anomalous": 750,
+    "pcap_file": "sample_network_traffic.pcap"
+  }
+}

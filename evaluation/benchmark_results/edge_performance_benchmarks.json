@@ -1,0 +1,81 @@
+{
+  "timestamp": "2026-11-15T08:46:52Z",
+  "measured_hardware_environment": {
+    "platform": "amd64-Windows",
+    "os_release": "Windows-11-10.0.26200-SP0",
+    "cpu_model": "11th Gen Intel(R) Core(TM) i5-1135G7 @ 2.40GHz",
+    "physical_cores": 4,
+    "logical_cores": 8,
+    "total_ram_gb": 7.75,
+    "is_arm_hardware": false,
+    "measurement_category": "x86_64 Host Measured (ARM64 Target Pending Physical Board)",
+    "power_consumption_watts": "Not Measured (Requires external USB-C hardware power meter on target board)"
+  },
+  "arm_edge_deployment_readiness": {
+    "target_platforms": [
+      "Raspberry Pi 5 (Broadcom BCM2712, Quad-core Cortex-A76 @ 2.4GHz, ARM64 Linux)",
+      "ARM64 Android (Termux / ExecuTorch JNI runner)",
+      "Raspberry Pi 5 + Hailo-8L AI HAT+ (Optional NPU vision path; Llama runs on ARM CPU via XNNPACK)"
+    ],
+    "executorch_pte_verified": {
+      "verified": true,
+      "format": "ExecuTorch-Portable-ExportedProgram-Container",
+      "size_bytes": 3318416,
+      "size_mb": 3.165,
+      "header": {
+        "format": "ExecuTorch-Portable-ExportedProgram-Container",
+        "schema_version": "1.0",
+        "model_type": "llama",
+        "seq_len": 64,
+        "vocab_size": 512,
+        "hidden_size": 128,
+        "num_hidden_layers": 3,
+        "num_attention_heads": 4,
+        "num_key_value_heads": 2,
+        "target_delegate": "XNNPACK"
+      }
+    },
+    "total_models_footprint_mb": 4.013,
+    "offline_operation_verified": true
+  },
+  "component_benchmarks": {
+    "url_detector": {
+      "mean_latency_ms": 30.047,
+      "p95_latency_ms": 38.777,
+      "throughput_items_per_sec": 33.3,
+      "model_size_kb": 262.37
+    },
+    "sms_detector": {
+      "mean_latency_ms": 3.31,
+      "p95_latency_ms": 4.998,
+      "throughput_items_per_sec": 302.1,
+      "model_size_kb": 64.18
+    },
+    "network_detector": {
+      "mean_latency_ms": 31.464,
+      "p95_latency_ms": 36.618,
+      "throughput_items_per_sec": 31.8,
+      "model_size_kb": 542.31
+    },
+    "llama_executorch": {
+      "runtime_backend": "ExecuTorch-ExportedProgram-Graph (amd64-Windows)",
+      "mean_latency_ms": 103.627,
+      "p95_latency_ms": 163.935,
+      "throughput_advisories_per_sec": 9.65,
+      "model_size_kb": 3240.64
+    },
+    "end_to_end_pipeline": {
+      "mean_latency_ms": 144.973,
+      "p95_latency_ms": 209.838,
+      "process_rss_memory_mb": 477.87,
+      "inference_rss_delta_mb": 0.281,
+      "cpu_utilization_pct": 72.9
+    }
+  },
+  "generated_figures": [
+    "confusion_matrices.png",
+    "model_comparison_f1_auc.png",
+    "pipeline_latency_breakdown.png",
+    "model_footprint_comparison.png"
+  ]
+}

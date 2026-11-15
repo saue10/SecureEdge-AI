@@ -1,0 +1,39 @@
+# Multi-architecture ARM64 Edge Container for SecureEdge AI
+# Target: linux/arm64 (Raspberry Pi 5 Cortex-A76, ARMv8.2-A NEON / XNNPACK)
+# Build command: docker buildx build --platform linux/arm64 -t secureedge-ai:arm64 -f deployment/arm64/Dockerfile.arm64 .
+
+FROM --platform=linux/arm64 python:3.11-slim-bookworm
+
+LABEL maintainer="SecureEdge AI Team — Bharat AI-SoC Challenge 2026-27 (PS3)"
+LABEL description="On-Device Threat, Phishing & Scam Detection with Llama + ExecuTorch on ARM64"
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    OMP_NUM_THREADS=4 \
+    MKL_NUM_THREADS=4
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpcap0.8 \
+    tcpdump \
+    iproute2 \
+    cmake \
+    build-essential \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /opt/secureedge-ai
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt && \
+    pip install --no-cache-dir executorch
+
+COPY . .
+
+# Verify models and ExecuTorch .pte artifact integrity at build time
+RUN python deployment/arm64/verify_arm64_executorch.py --check-only
+
+EXPOSE 8501
+
+CMD ["python", "scripts/run_application.py", "--host", "0.0.0.0", "--port", "8501"]

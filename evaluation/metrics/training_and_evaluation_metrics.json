@@ -1,0 +1,269 @@
+{
+  "timestamp": "2026-11-15T08:46:17Z",
+  "url_detection": {
+    "selected_model": "RandomForest_Calibrated",
+    "domain_leakage_overlap": 0,
+    "selected_metrics": {
+      "accuracy": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "roc_auc": 1.0,
+      "false_positive_rate": 0.0,
+      "confusion_matrix": {
+        "tn": 176,
+        "fp": 0,
+        "fn": 0,
+        "tp": 208
+      },
+      "train_time_ms": 612.78,
+      "inference_latency_ms": 37.046,
+      "model_size_kb": 261.29,
+      "saved_bundle_size_kb": 262.37
+    },
+    "candidates": {
+      "LogisticRegression": {
+        "accuracy": 0.9974,
+        "precision": 0.9952,
+        "recall": 1.0,
+        "f1_score": 0.9976,
+        "roc_auc": 1.0,
+        "false_positive_rate": 0.0057,
+        "confusion_matrix": {
+          "tn": 175,
+          "fp": 1,
+          "fn": 0,
+          "tp": 208
+        },
+        "train_time_ms": 24.55,
+        "inference_latency_ms": 0.2128,
+        "model_size_kb": 1.68
+      },
+      "RandomForest_Calibrated": {
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0,
+        "roc_auc": 1.0,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": {
+          "tn": 176,
+          "fp": 0,
+          "fn": 0,
+          "tp": 208
+        },
+        "train_time_ms": 612.78,
+        "inference_latency_ms": 37.046,
+        "model_size_kb": 261.29,
+        "saved_bundle_size_kb": 262.37
+      },
+      "GradientBoosting": {
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0,
+        "roc_auc": 1.0,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": {
+          "tn": 176,
+          "fp": 0,
+          "fn": 0,
+          "tp": 208
+        },
+        "train_time_ms": 630.83,
+        "inference_latency_ms": 3.2678,
+        "model_size_kb": 120.06
+      },
+      "Lightweight_MLP": {
+        "accuracy": 0.9948,
+        "precision": 1.0,
+        "recall": 0.9904,
+        "f1_score": 0.9952,
+        "roc_auc": 1.0,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": {
+          "tn": 176,
+          "fp": 0,
+          "fn": 2,
+          "tp": 206
+        },
+        "train_time_ms": 219.67,
+        "inference_latency_ms": 0.2299,
+        "model_size_kb": 100.97
+      }
+    }
+  },
+  "sms_detection": {
+    "selected_model": "Calibrated_LinearSVC",
+    "selected_metrics": {
+      "accuracy": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "roc_auc": 1.0,
+      "false_positive_rate": 0.0,
+      "confusion_matrix": {
+        "tn": 150,
+        "fp": 0,
+        "fn": 0,
+        "tp": 150
+      },
+      "train_time_ms": 206.46,
+      "inference_latency_ms": 1.5709,
+      "model_size_kb": 64.18
+    },
+    "candidates": {
+      "Calibrated_LinearSVC": {
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0,
+        "roc_auc": 1.0,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": {
+          "tn": 150,
+          "fp": 0,
+          "fn": 0,
+          "tp": 150
+        },
+        "train_time_ms": 206.46,
+        "inference_latency_ms": 1.5709,
+        "model_size_kb": 64.18
+      },
+      "LogisticRegression": {
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0,
+        "roc_auc": 1.0,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": {
+          "tn": 150,
+          "fp": 0,
+          "fn": 0,
+          "tp": 150
+        },
+        "train_time_ms": 21.19,
+        "inference_latency_ms": 0.0825
+      },
+      "RandomForest": {
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0,
+        "roc_auc": 1.0,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": {
+          "tn": 150,
+          "fp": 0,
+          "fn": 0,
+          "tp": 150
+        },
+        "train_time_ms": 225.11,
+        "inference_latency_ms": 9.8976
+      }
+    }
+  },
+  "network_detection": {
+    "selected_model": "RandomForest_Calibrated",
+    "selected_metrics": {
+      "accuracy": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "roc_auc": 1.0,
+      "false_positive_rate": 0.0,
+      "confusion_matrix": {
+        "tn": 188,
+        "fp": 0,
+        "fn": 0,
+        "tp": 187
+      },
+      "train_time_ms": 522.72,
+      "inference_latency_ms": 23.5923,
+      "model_size_kb": 542.31
+    },
+    "candidates": {
+      "RandomForest_Calibrated": {
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0,
+        "roc_auc": 1.0,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": {
+          "tn": 188,
+          "fp": 0,
+          "fn": 0,
+          "tp": 187
+        },
+        "train_time_ms": 522.72,
+        "inference_latency_ms": 23.5923,
+        "model_size_kb": 542.31
+      },
+      "GradientBoosting": {
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0,
+        "roc_auc": 1.0,
+        "false_positive_rate": 0.0,
+        "confusion_matrix": {
+          "tn": 188,
+          "fp": 0,
+          "fn": 0,
+          "tp": 187
+        },
+        "train_time_ms": 173.28,
+        "inference_latency_ms": 1.6909
+      },
+      "LogisticRegression": {
+        "accuracy": 0.9147,
+        "precision": 0.9532,
+        "recall": 0.8717,
+        "f1_score": 0.9106,
+        "roc_auc": 0.983,
+        "false_positive_rate": 0.0426,
+        "confusion_matrix": {
+          "tn": 180,
+          "fp": 8,
+          "fn": 24,
+          "tp": 163
+        },
+        "train_time_ms": 11.48,
+        "inference_latency_ms": 0.2152
+      }
+    }
+  },
+  "llama_executorch": {
+    "model_family": "Llama-3.2 (LlamaForCausalLM)",
+    "architecture": "LlamaForCausalLM",
+    "vocab_size": 512,
+    "hidden_size": 128,
+    "intermediate_size": 256,
+    "num_hidden_layers": 3,
+    "num_attention_heads": 4,
+    "num_key_value_heads": 2,
+    "rope_theta": 500000.0,
+    "max_seq_len": 64,
+    "parameter_count": 574336,
+    "export_api": "torch.export (PyTorch 2.8.0+cpu)",
+    "native_executorch_wheel_present": false,
+    "backend_delegate": "torch.export.ExportedProgram + XNNPACK-Target-Spec",
+    "target_arm_delegate": "XNNPACK (ARM64 NEON / Raspberry Pi 5 Cortex-A76)",
+    "host_export_platform": "amd64-Windows",
+    "graph_node_count": 324,
+    "graph_op_breakdown": {
+      "placeholder": 33,
+      "call_function": 290,
+      "output": 1
+    },
+    "pte_artifact_path": "llama_3_2_cyber_advisor.pte",
+    "pte_size_bytes": 3318416,
+    "pte_size_mb": 3.165,
+    "pt2_size_bytes": 3318129,
+    "export_duration_ms": 5283.8,
+    "training_final_loss": 0.01269,
+    "training_time_ms": 4308.85
+  }
+}

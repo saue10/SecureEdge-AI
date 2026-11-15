@@ -1,0 +1,39 @@
+{
+  "timestamp": "2026-11-15T08:37:19Z",
+  "arm_capabilities": {
+    "architecture": "amd64",
+    "os": "Windows",
+    "is_physical_or_emulated_arm": false,
+    "board_model": "Unknown / Non-Linux Host",
+    "arm_neon_asimd": false,
+    "arm_dotprod": false,
+    "verification_status": "HOST_PREPARED_PENDING_PHYSICAL_ARM64_BOARD"
+  },
+  "executorch_pte_artifact": {
+    "verified": true,
+    "format": "ExecuTorch-Portable-ExportedProgram-Container",
+    "size_bytes": 3318416,
+    "size_mb": 3.165,
+    "header": {
+      "format": "ExecuTorch-Portable-ExportedProgram-Container",
+      "schema_version": "1.0",
+      "model_type": "llama",
+      "seq_len": 64,
+      "vocab_size": 512,
+      "hidden_size": 128,
+      "num_hidden_layers": 3,
+      "num_attention_heads": 4,
+      "num_key_value_heads": 2,
+      "target_delegate": "XNNPACK"
+    }
+  },
+  "runtime_backend": "ExecuTorch-ExportedProgram-Graph (amd64-Windows)",
+  "verification_smoke_test": {
+    "url_classification": "malicious",
+    "url_risk_score": 82,
+    "sms_classification": "benign",
+    "sms_risk_score": 25,
+    "llama_explanation_verified": true,
+    "total_smoke_test_ms": 315.9
+  }
+}
