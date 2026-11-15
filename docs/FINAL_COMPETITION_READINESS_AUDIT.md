@@ -28,7 +28,8 @@ During final competition verification, an engineering audit identified a critica
 | **Phishing URL Detection** | ✅ Verified | `RandomForest_Calibrated` (`F1=1.0000`, `0` domain overlap across 300 unseen test domains, `49.14 ms` mean latency) |
 | **Scam & Spam SMS Detection** | ✅ Verified | `Calibrated_LinearSVC` (`F1=1.0000` on 300 unseen messages, `5.46 ms` mean latency, OTP false-positive guard) |
 | **Network Intrusion Detection** | ✅ Verified | `ScapyFlowCollector` (`sample_network_traffic.pcap`, 126 packets) + `RandomForest_Calibrated` (`F1=1.0000`, `43.71 ms`) + `IsolationForest` |
-| **Genuine Llama-Family + ExecuTorch** | ✅ Verified | `HuggingFaceTB/SmolLM2-135M-Instruct` (`LlamaForCausalLM`, 134.5M params, Apache-2.0) exported via `torch.export` (`2,457` nodes, `520.94 MB` `.pte`) |
+| **Lightweight Comparison LLM (`SmolLM2-135M-Instruct`)** | ✅ Verified | Preserved as lightweight open-access comparison model (`LlamaForCausalLM`, 134.5M params, Apache-2.0, `torch.export` `2,457` nodes, `520.94 MB` `.pte`/`.pt2`) — **not** claimed as Meta Llama |
+| **Authentic Meta Llama 3.2 1B + Native ExecuTorch** | ⚠️ Blocked on Windows Host | `meta-llama/Llama-3.2-1B-Instruct` (`gated=manual`, no `HF_TOKEN`) + `executorch` (`torch>=2.10` `c10.dll` DLL init failure on Windows). Linux/ARM64 `8da4w` export wired in `deployment/raspberry_pi/setup_rpi5.sh`; see `docs/LLAMA_EXECUTORCH_COMPLIANCE_AUDIT.md` |
 | **Explainability & Guardrails** | ✅ Verified | `UnifiedThreatEngine` + `LlamaCyberAdvisor` Pydantic schema lock (`risk_level` locked to detector verdict) |
 | **100% Offline Operation** | ✅ Verified | Zero cloud APIs, offline HuggingFace tokenizer (`local_files_only=True`), zero CDN dependencies in `index.html` |
 | **Unit & Integration QA** | ✅ Verified | `python -m unittest discover -s tests -p "test_*.py" -v` → **16/16 tests PASS** (`317.241s`) |

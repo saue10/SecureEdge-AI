@@ -28,7 +28,15 @@ source .venv_arm64/bin/activate
 echo "[3/5] Installing Python dependencies and PyTorch ExecuTorch (XNNPACK backend)..."
 pip install --upgrade pip wheel setuptools
 pip install -r requirements.txt
-pip install executorch || echo "Note: If using Python 3.13 on Debian testing, use Python 3.11/3.12 for prebuilt executorch wheels."
+pip install executorch torchao || echo "Note: If using Python 3.13 on Debian testing, use Python 3.11/3.12 for prebuilt executorch wheels."
+
+echo "[3b/5] Optional: Export official Meta Llama 3.2 1B Instruct (8da4w XNNPACK .pte) when HF_TOKEN is set..."
+if [[ -n "${HF_TOKEN:-}" ]]; then
+    echo "HF_TOKEN detected. Ready to export meta-llama/Llama-3.2-1B-Instruct via ExecuTorch (8da4w XNNPACK):"
+    echo "  python -m executorch.examples.models.llama.export_llama --model llama3_2 --checkpoint meta-llama/Llama-3.2-1B-Instruct -q 8da4w -d xnnpack -o models/llama_executorch/llama_3_2_1b_8da4w.pte"
+else
+    echo "HF_TOKEN not set; using preserved lightweight comparison model (SmolLM2-135M-Instruct)."
+fi
 
 echo "[4/5] Verifying models and ExecuTorch .pte artifact..."
 python deployment/arm64/verify_arm64_executorch.py

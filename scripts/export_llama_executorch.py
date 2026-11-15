@@ -1,7 +1,9 @@
 """
 Standalone Llama-family ExecuTorch Export Script for SecureEdge AI.
-Exports HuggingFaceTB/SmolLM2-135M-Instruct (default ungated 135M LlamaForCausalLM)
-or meta-llama/Llama-3.2-1B-Instruct (when HF_TOKEN is configured) to .pte and .pt2.
+Exports HuggingFaceTB/SmolLM2-135M-Instruct (lightweight open-access comparison model;
+SmolLM2-family using LlamaForCausalLM architecture — NOT Meta Llama)
+or meta-llama/Llama-3.2-1B-Instruct (authentic Meta Llama 3.2 checkpoint when HF_TOKEN
+and Linux/ARM64 executorch + torchao are available) to .pte and .pt2.
 """
 
 import argparse

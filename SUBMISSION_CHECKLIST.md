@@ -12,10 +12,12 @@
   - Local Dark Cybersecurity Dashboard (`python scripts/run_application.py --host 127.0.0.1 --port 8501`)
   - Offline CLI Demonstration (`python scripts/run_application.py --cli-demo`) — verified exit code `0`
   - Streamlit Alternative UI (`app/streamlit_app.py`)
-- [x] **Genuine Llama-Family + ExecuTorch Pipeline:**
-  - `HuggingFaceTB/SmolLM2-135M-Instruct` (`LlamaForCausalLM`, 134.5M params, Apache-2.0) exported via `python scripts/export_llama_executorch.py` (`smollm2_135m_cyber_advisor.pte`, `520.94 MB`, `2,457` nodes)
+- [x] **Lightweight Comparison LLM (`SmolLM2-135M-Instruct`) Preserved:**
+  - `HuggingFaceTB/SmolLM2-135M-Instruct` (`LlamaForCausalLM`, 134.5M params, Apache-2.0) exported via `python scripts/export_llama_executorch.py` (`smollm2_135m_cyber_advisor.pte`, `520.94 MB`, `2,457` nodes; preserved as lightweight comparison model, not claimed as Meta Llama)
   - Offline tokenizer committed in `models/llama_executorch/tokenizer/`
   - `.pte`/`.pt2` (>100 MB) excluded in `.gitignore` for GitHub compliance
+- [ ] **Authentic Meta Llama 3.2 1B + Native ExecuTorch (`8da4w` XNNPACK):**
+  - **Blocked on Windows 11 host** (`meta-llama/Llama-3.2-1B-Instruct` requires `HF_TOKEN`; `executorch` wheels require `torch>=2.10` which fails `c10.dll` init on this host). See `docs/LLAMA_EXECUTORCH_COMPLIANCE_AUDIT.md` and run `deployment/raspberry_pi/setup_rpi5.sh` on Linux/ARM64 with `HF_TOKEN` set.
 - [x] **Specialized Detectors & Datasets:**
   - `url_detector_pipeline.joblib` (`262.4 KB`), `sms_detector_pipeline.joblib` (`64.2 KB`), `network_detector_pipeline.joblib` (`542.3 KB`)
   - Reproducible datasets (`data/raw/`) + Scapy PCAP (`data/processed/sample_network_traffic.pcap`)

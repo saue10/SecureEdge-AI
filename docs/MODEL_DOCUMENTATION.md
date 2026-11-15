@@ -33,16 +33,10 @@
 
 ## 2. Priority 4: Local Llama + ExecuTorch Pipeline (`src/llama/`, `src/executorch/`)
 
-### 2.1 Architecture Specification
-To guarantee zero-cloud, low-RAM execution on both the 7.75 GB development host and 4GB/8GB ARM64 edge boards without requiring gated HuggingFace credentials during automated evaluation, SecureEdge AI deploys a genuine pretrained **Llama-family causal language model (`HuggingFaceTB/SmolLM2-135M-Instruct`, `transformers.LlamaForCausalLM`, Apache-2.0)** as its primary production model (while preserving the earlier `574,336`-parameter `3.17 MB` mini-Llama prototype in `models/llama_executorch/experimental_mini_llama/` for ablation reference):
-- **Model ID & Provenance:** `HuggingFaceTB/SmolLM2-135M-Instruct` (Category A: Genuine Pretrained Llama-Family Checkpoint, Apache-2.0, ungated)
-- **Architecture:** `LlamaForCausalLM`
-- **Attention Mechanism:** Grouped-Query Attention (GQA) with `num_attention_heads = 9`, `num_key_value_heads = 3`
-- **Positional Embeddings:** Rotary Position Embeddings (`rope_theta = 10000.0`)
-- **Feed-Forward Network:** SwiGLU (`hidden_act = "silu"`, `hidden_size = 576`, `intermediate_size = 1536`, `num_hidden_layers = 30`)
-- **Normalization:** `LlamaRMSNorm` (`rms_norm_eps = 1e-5`)
-- **Total Parameters:** `134,515,008` parameters (`49,152` vocabulary, `520.94 MB` exported `.pte` artifact)
-- **Full Weight Upgradability:** `LlamaExecuTorchExporter` also supports `meta-llama/Llama-3.2-1B-Instruct` when a HuggingFace access token is provided on a machine with sufficient RAM.
+### 2.1 Architecture Specification (Lightweight Comparison Model + Meta Llama 3.2 1B Target)
+To guarantee zero-cloud, low-RAM execution on the `7.75 GiB` Windows development host without gated HuggingFace credentials during automated evaluation, SecureEdge AI preserves **`HuggingFaceTB/SmolLM2-135M-Instruct`** (`transformers.LlamaForCausalLM`, Apache-2.0) as its **lightweight open-access comparison model** (alongside the `574,336`-parameter `3.17 MB` prototype in `models/llama_executorch/experimental_mini_llama/`). Note that `SmolLM2-135M-Instruct` is a SmolLM2-family checkpoint, **not** an authentic Meta Llama checkpoint; see `docs/LLAMA_EXECUTORCH_COMPLIANCE_AUDIT.md` for the Meta Llama 3.2 1B Instruct investigation and Windows ExecuTorch blockers:
+- **Lightweight Comparison Model:** `HuggingFaceTB/SmolLM2-135M-Instruct` (`LlamaForCausalLM`, Apache-2.0, ungated, `134,515,008` params, `49,152` vocab, `520.94 MB` `.pte`/`.pt2`)
+- **Official Meta Llama Target (Linux/ARM64 with `HF_TOKEN`):** `meta-llama/Llama-3.2-1B-Instruct` (`LlamaForCausalLM`, `16` layers, `2048` hidden, `8192` intermediate, `32` attn heads, `8` KV heads, `128,256` vocab, `rope_theta = 500000.0`, `llama3` RoPE scaling, `bfloat16`; `8da4w` `int8` dynamic activations + `int4` group-wise weights via `torchao` + `XnnpackPartitioner` -> `~0.75–0.90 GB` `.pte`).
 
 ### 2.2 ExecuTorch Export & Runtime Execution
 1. **Static Graph Capture (`torch.export.export`)**: `ExportableLlamaCausalLM` wraps `LlamaForCausalLM` with static input shape `(1, 96)` (`use_cache=False`), tracing `2,457` ATen graph nodes (`2,180 call_function` ops, `276 placeholders`, `1 output`).

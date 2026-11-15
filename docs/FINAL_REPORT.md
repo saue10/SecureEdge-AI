@@ -75,7 +75,7 @@ flowchart TD
     B4 --> C
     C --> D["Calibrated Risk Score (0-100) &\nForensic Evidence Aggregation"]
     D --> E["Bounded JSON Prompt\n(LlamaExplanationInput)"]
-    E --> F["Llama 3.2 Architecture Model\n(Exported via torch.export / ExecuTorch .pte)"]
+    E --> F["On-Device LlamaForCausalLM\n(Comparison: SmolLM2-135M .pt2/.pte\nARM64 Target: Meta Llama 3.2 1B 8da4w)"]
     F --> G["Pydantic Schema Validator &\nDetector Authority Guardrail"]
     G --> H["SECUREEDGE AI Dashboard UI\n(Threat Verdict + Grounded Explanation + Remediation)"]
 ```
@@ -160,10 +160,9 @@ All datasets are reproducibly generated/curated via `scripts/download_datasets.p
 
 ## 14. Llama Integration (`src/llama/`)
 
-SecureEdge AI integrates a genuine pretrained **Llama-family causal language model (`HuggingFaceTB/SmolLM2-135M-Instruct`, `transformers.LlamaForCausalLM`, Apache-2.0)**:
-- **Hyperparameters:** `vocab_size = 49,152` (offline HuggingFace `GPT2Tokenizer`), `hidden_size = 576`, `intermediate_size = 1536`, `num_hidden_layers = 30`, `num_attention_heads = 9`, `num_key_value_heads = 3` (Grouped-Query Attention), `hidden_act = "silu"` (SwiGLU), `rope_theta = 10000.0`, `max_seq_len = 96` (`134,515,008` parameters).
-- **Provenance:** Category A — Genuine Pretrained Llama-Family Checkpoint (ungated Apache-2.0). An earlier experimental `574,336`-parameter `3.17 MB` mini-Llama prototype is preserved in `models/llama_executorch/experimental_mini_llama/` for ablation reference.
-- **Bounded Prompt & Guardrail:** `LlamaCyberAdvisor` formats `LlamaExplanationInput` using the offline HuggingFace chat template, runs greedy autoregressive decoding over the exported ExecuTorch graph (`max_new_tokens=10`), and synthesizes a strictly grounded `LlamaExplanationOutput` whose `risk_level` is locked to the specialized detector's verdict.
+SecureEdge AI preserves **`HuggingFaceTB/SmolLM2-135M-Instruct`** (`transformers.LlamaForCausalLM`, Apache-2.0, `134,515,008` params, `vocab_size = 49,152`) as its **lightweight open-access comparison model** on the Windows host (alongside the `574,336`-parameter `3.17 MB` prototype in `models/llama_executorch/experimental_mini_llama/`), while targeting **`meta-llama/Llama-3.2-1B-Instruct`** (`16` layers, `2048` hidden, `128,256` vocab, `rope_theta = 500000.0`, `8da4w` XNNPACK) for Linux/ARM64 deployment:
+- **Compliance Note:** `SmolLM2-135M-Instruct` uses the `LlamaForCausalLM` architecture class but is a SmolLM2-family checkpoint, **not** an authentic Meta Llama checkpoint. Meta Llama 3.2 1B Instruct (`gated=manual`) + native `executorch` (`torch>=2.10` `c10.dll` DLL init failure on Windows) blockers are documented in `docs/LLAMA_EXECUTORCH_COMPLIANCE_AUDIT.md`.
+- **Bounded Prompt & Guardrail:** `LlamaCyberAdvisor` formats `LlamaExplanationInput` using the offline HuggingFace chat template, runs greedy autoregressive decoding over the exported static graph (`max_new_tokens=10`), and synthesizes a strictly grounded `LlamaExplanationOutput` whose `risk_level` is locked to the specialized detector's verdict.
 
 ---
 

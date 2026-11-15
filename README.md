@@ -9,7 +9,9 @@
 
 ## 1. Executive Overview
 
-**SecureEdge AI** is a complete, reproducible, privacy-preserving edge cybersecurity system engineered to detect **phishing URLs**, **financial scam & spam SMS messages**, and **network traffic intrusions** entirely on-device—and explain those threats to non-expert users using a genuine pretrained **Llama-family causal language model (`HuggingFaceTB/SmolLM2-135M-Instruct`, `LlamaForCausalLM`, 134.5M parameters)** exported via **PyTorch `torch.export` / ExecuTorch (`.pte`)**.
+**SecureEdge AI** is a complete, reproducible, privacy-preserving edge cybersecurity system engineered to detect **phishing URLs**, **financial scam & spam SMS messages**, and **network traffic intrusions** entirely on-device—and explain those threats to non-expert users using a local **`LlamaForCausalLM` causal language model** exported via **PyTorch `torch.export` / ExecuTorch (`.pte`)**.
+
+> **Llama & ExecuTorch Compliance Transparency:** The repository currently runs and tests with **`HuggingFaceTB/SmolLM2-135M-Instruct`** (`134.5M` params, Apache-2.0) preserved as a **lightweight open-access comparison model** (using `LlamaForCausalLM`, **not** a Meta Llama checkpoint). The official target **`meta-llama/Llama-3.2-1B-Instruct`** (`8da4w` XNNPACK `.pte`) workflow is configured in `deployment/raspberry_pi/setup_rpi5.sh` but is **blocked on this Windows 11 host** by gated `HF_TOKEN` access and `executorch` (`torch>=2.10` `c10.dll` DLL init failure on Windows). See [`docs/LLAMA_EXECUTORCH_COMPLIANCE_AUDIT.md`](docs/LLAMA_EXECUTORCH_COMPLIANCE_AUDIT.md) for the full compliance status report.
 
 ### Key Engineering Highlights
 - **Strict Separation of Responsibilities:** Specialized, probability-calibrated ML detectors (`CalibratedClassifierCV`) extract forensic indicators and compute calibrated risk scores (`0–100`), while the local Llama + ExecuTorch model translates verified detector evidence into plain-English explanations and safe remediation steps—without ever inventing evidence or overriding detector verdicts.
