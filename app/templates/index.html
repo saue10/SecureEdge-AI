@@ -3,837 +3,510 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SECUREEDGE AI — On-Device Cybersecurity Assistant (ARM Edge + ExecuTorch)</title>
+  <title>SecureEdge AI — On-Device Threat Intelligence</title>
   <style>
     :root {
-      --bg-primary: #0b0f19;
-      --bg-secondary: #111827;
-      --bg-card: #161f30;
-      --border-color: #26334d;
-      --text-primary: #f0f6fc;
-      --text-secondary: #94a3b8;
-      --accent-blue: #38bdf8;
-      --accent-indigo: #6366f1;
-      --status-benign: #10b981;
-      --status-suspicious: #f59e0b;
-      --status-malicious: #ef4444;
-      --status-critical: #dc2626;
+      --bg: #0b1120;
+      --panel: #111827;
+      --panel-alt: #1a2234;
+      --border: #263147;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --ok: #22c55e;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --crit: #dc2626;
+      --abstain: #a855f7;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * { box-sizing: border-box; }
     body {
-      background-color: var(--bg-primary);
-      color: var(--text-primary);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif;
-      display: flex;
-      min-height: 100vh;
+      margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg); color: var(--text); display: flex; min-height: 100vh;
     }
-    /* Sidebar Navigation */
-    .sidebar {
-      width: 270px;
-      background-color: var(--bg-secondary);
-      border-right: 1px solid var(--border-color);
-      display: flex;
-      flex-direction: column;
-      flex-shrink: 0;
+    aside {
+      width: 260px; background: var(--panel); border-right: 1px solid var(--border);
+      padding: 18px 14px; display: flex; flex-direction: column; gap: 6px; flex-shrink: 0;
     }
-    .brand-header {
-      padding: 20px 18px;
-      border-bottom: 1px solid var(--border-color);
+    .brand { font-size: 1.15rem; font-weight: 700; color: var(--accent); letter-spacing: 0.4px; }
+    .subbrand { font-size: 0.76rem; color: var(--muted); margin-bottom: 12px; }
+    .nav-btn {
+      background: transparent; color: var(--text); border: 1px solid transparent;
+      text-align: left; padding: 9px 12px; border-radius: 8px; cursor: pointer; font-size: 0.88rem;
     }
-    .brand-title {
-      font-size: 1.25rem;
-      font-weight: 800;
-      letter-spacing: 0.06em;
-      color: var(--accent-blue);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .brand-tagline {
-      font-size: 0.76rem;
-      color: var(--text-secondary);
-      margin-top: 4px;
-    }
-    .badge-ps3 {
-      display: inline-block;
-      margin-top: 8px;
-      padding: 3px 8px;
-      font-size: 0.7rem;
-      font-weight: 700;
-      background: rgba(56, 189, 248, 0.14);
-      color: var(--accent-blue);
-      border: 1px solid rgba(56, 189, 248, 0.35);
-      border-radius: 4px;
-    }
-    .nav-list {
-      list-style: none;
-      padding: 12px 10px;
-      flex: 1;
-    }
-    .nav-item {
-      padding: 11px 14px;
-      margin-bottom: 4px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: var(--text-secondary);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .nav-item:hover {
-      background-color: rgba(255, 255, 255, 0.05);
-      color: var(--text-primary);
-    }
-    .nav-item.active {
-      background-color: rgba(56, 189, 248, 0.15);
-      color: var(--accent-blue);
-      border-left: 3px solid var(--accent-blue);
-      font-weight: 600;
-    }
-    .sidebar-footer {
-      padding: 14px 16px;
-      border-top: 1px solid var(--border-color);
-      font-size: 0.75rem;
-      color: var(--text-secondary);
-      line-height: 1.5;
-    }
-    /* Main Content Area */
-    .main-content {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      overflow-x: hidden;
-    }
-    .topbar {
-      padding: 14px 28px;
-      background-color: var(--bg-secondary);
-      border-bottom: 1px solid var(--border-color);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-    .status-pills {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
+    .nav-btn:hover { background: var(--panel-alt); }
+    .nav-btn.active { background: #1e293b; border-color: var(--accent); color: var(--accent); font-weight: 600; }
+    main { flex: 1; padding: 24px 28px; overflow-y: auto; max-width: 1280px; }
+    header.topbar {
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+      padding-bottom: 16px; border-bottom: 1px solid var(--border); margin-bottom: 20px;
     }
     .pill {
-      font-size: 0.76rem;
-      padding: 5px 11px;
-      border-radius: 999px;
-      font-weight: 600;
-      border: 1px solid var(--border-color);
-      background-color: var(--bg-card);
+      display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 600;
+      border: 1px solid var(--border); background: var(--panel-alt);
     }
-    .pill-green { color: #34d399; border-color: rgba(16, 185, 129, 0.4); }
-    .pill-blue { color: #38bdf8; border-color: rgba(56, 189, 248, 0.4); }
-    .pill-amber { color: #fbbf24; border-color: rgba(245, 158, 11, 0.4); }
-    .page-container {
-      padding: 26px 28px;
-      max-width: 1380px;
-      width: 100%;
-    }
-    .section-view { display: none; }
-    .section-view.active { display: block; }
-    .section-header {
-      margin-bottom: 20px;
-    }
-    .section-header h1 {
-      font-size: 1.5rem;
-      font-weight: 700;
-      margin-bottom: 5px;
-    }
-    .section-header p {
-      color: var(--text-secondary);
-      font-size: 0.9rem;
-    }
-    /* Grid & Cards */
-    .grid-4 {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 16px;
-      margin-bottom: 22px;
-    }
-    .grid-2 {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
-      gap: 18px;
-      margin-bottom: 22px;
-    }
+    .pill.ok { color: var(--ok); border-color: rgba(34,197,94,0.4); }
+    .pill.warn { color: var(--warn); border-color: rgba(245,158,11,0.4); }
+    .pill.danger { color: var(--danger); border-color: rgba(239,68,68,0.4); }
+    .pill.abstain { color: var(--abstain); border-color: rgba(168,85,247,0.4); }
+    .section { display: none; }
+    .section.active { display: block; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin-bottom: 20px; }
     .card {
-      background-color: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 18px 20px;
-      margin-bottom: 18px;
+      background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 16px;
     }
-    .card-title {
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: var(--accent-blue);
-      margin-bottom: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-    .stat-value {
-      font-size: 2rem;
-      font-weight: 800;
-      margin: 6px 0;
-    }
-    .stat-sub {
-      font-size: 0.8rem;
-      color: var(--text-secondary);
-    }
-    /* Inputs & Buttons */
-    .input-group {
-      margin-bottom: 14px;
-    }
-    .input-group label {
-      display: block;
-      font-size: 0.85rem;
-      color: var(--text-secondary);
-      margin-bottom: 6px;
-      font-weight: 600;
-    }
+    .kpi-val { font-size: 1.7rem; font-weight: 700; margin-top: 6px; }
+    .muted { color: var(--muted); font-size: 0.85rem; }
+    label { display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 6px; margin-top: 10px; }
     input[type="text"], textarea, select {
-      width: 100%;
-      padding: 11px 14px;
-      background-color: #0d1322;
-      border: 1px solid var(--border-color);
-      border-radius: 6px;
-      color: var(--text-primary);
-      font-size: 0.92rem;
-      font-family: inherit;
+      width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border);
+      background: #0f172a; color: var(--text); font-size: 0.9rem;
     }
-    textarea { min-height: 95px; resize: vertical; }
-    .btn-row {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 10px;
+    button.primary {
+      background: var(--accent); color: #082f49; border: none; padding: 9px 16px; border-radius: 8px;
+      font-weight: 700; cursor: pointer; margin-top: 12px;
     }
-    .btn {
-      padding: 9px 16px;
-      border-radius: 6px;
-      border: 1px solid transparent;
-      font-size: 0.86rem;
-      font-weight: 600;
-      cursor: pointer;
+    button.secondary {
+      background: var(--panel-alt); color: var(--text); border: 1px solid var(--border);
+      padding: 8px 14px; border-radius: 8px; cursor: pointer; margin-top: 10px;
     }
-    .btn-primary {
-      background-color: #0284c7;
-      color: #fff;
+    table { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
+    th, td { padding: 9px 10px; border-bottom: 1px solid var(--border); text-align: left; }
+    th { color: var(--muted); font-weight: 600; }
+    .disclaimer {
+      background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.35);
+      border-radius: 8px; padding: 12px 14px; font-size: 0.84rem; margin-bottom: 16px;
     }
-    .btn-primary:hover { background-color: #0369a1; }
-    .btn-secondary {
-      background-color: #1e293b;
-      color: var(--text-primary);
-      border-color: var(--border-color);
+    .result-box {
+      background: #0f172a; border: 1px solid var(--border); border-radius: 8px; padding: 14px; margin-top: 14px;
     }
-    .btn-secondary:hover { background-color: #334155; }
-    .btn-danger {
-      background-color: rgba(239, 68, 68, 0.18);
-      color: #f87171;
-      border-color: rgba(239, 68, 68, 0.4);
-    }
-    /* Threat Result Box */
-    .verdict-banner {
-      padding: 14px 18px;
-      border-radius: 6px;
-      margin-bottom: 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-weight: 700;
-    }
-    .verdict-benign { background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #34d399; }
-    .verdict-suspicious { background: rgba(245, 158, 11, 0.15); border: 1px solid #f59e0b; color: #fbbf24; }
-    .verdict-malicious { background: rgba(239, 68, 68, 0.18); border: 1px solid #ef4444; color: #f87171; }
-    .evidence-list {
-      list-style: disc;
-      margin-left: 20px;
-      color: var(--text-primary);
-      font-size: 0.9rem;
-      line-height: 1.6;
-    }
-    .llama-box {
-      background: rgba(99, 102, 241, 0.1);
-      border: 1px solid rgba(99, 102, 241, 0.4);
-      border-radius: 6px;
-      padding: 14px 16px;
-      margin-top: 14px;
-    }
-    .llama-box h4 {
-      color: #818cf8;
-      font-size: 0.85rem;
-      text-transform: uppercase;
-      margin-bottom: 8px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.85rem;
-    }
-    th, td {
-      padding: 10px 12px;
-      text-align: left;
-      border-bottom: 1px solid var(--border-color);
-    }
-    th {
-      color: var(--accent-blue);
-      font-weight: 600;
-      background-color: rgba(0, 0, 0, 0.2);
-    }
-    pre {
-      background-color: #090d16;
-      padding: 12px;
-      border-radius: 6px;
-      border: 1px solid var(--border-color);
-      overflow-x: auto;
-      font-size: 0.8rem;
-      color: #a5f3fc;
-    }
-    .bar-row {
-      margin-bottom: 10px;
-    }
-    .bar-label {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.82rem;
-      margin-bottom: 4px;
-    }
-    .bar-track {
-      height: 8px;
-      background: #0d1322;
-      border-radius: 4px;
-      overflow: hidden;
-    }
-    .bar-fill {
-      height: 100%;
-      background: var(--accent-blue);
-    }
-    .figure-img {
-      width: 100%;
-      border-radius: 6px;
-      border: 1px solid var(--border-color);
-      margin-top: 8px;
-    }
+    ul.clean { margin: 6px 0 0 18px; padding: 0; }
+    ul.clean li { margin-bottom: 4px; font-size: 0.87rem; }
   </style>
 </head>
 <body>
-  <!-- Sidebar -->
-  <aside class="sidebar">
-    <div class="brand-header">
-      <div class="brand-title">&#x1F6E1; SECUREEDGE AI</div>
-      <div class="brand-tagline">"Your Security. Your Device. Your Privacy."</div>
-      <span class="badge-ps3">Bharat AI-SoC Challenge | PS3</span>
-    </div>
-    <ul class="nav-list">
-      <li class="nav-item active" onclick="switchTab('dashboard', this)">1. Dashboard Overview</li>
-      <li class="nav-item" onclick="switchTab('url-scanner', this)">2. URL Phishing Scanner</li>
-      <li class="nav-item" onclick="switchTab('sms-detector', this)">3. SMS Scam Detector</li>
-      <li class="nav-item" onclick="switchTab('network-monitor', this)">4. Network Monitor</li>
-      <li class="nav-item" onclick="switchTab('llama-advisor', this)">5. AI Threat Explanation</li>
-      <li class="nav-item" onclick="switchTab('history', this)">6. Detection History</li>
-      <li class="nav-item" onclick="switchTab('sys-info', this)">7. System Information</li>
-      <li class="nav-item" onclick="switchTab('benchmarks', this)">8. Edge Benchmarks</li>
-    </ul>
-    <div class="sidebar-footer">
-      <div><strong>Runtime:</strong> Llama 3.2 + ExecuTorch (.pte)</div>
-      <div><strong>Privacy:</strong> 100% On-Device Inference</div>
-      <div><strong>Cloud Dependency:</strong> None</div>
-    </div>
+  <aside>
+    <div class="brand">SECUREEDGE AI</div>
+    <div class="subbrand">Bharat AI-SoC PS3 | Localhost Only</div>
+    <button class="nav-btn active" data-tab="overview">1. Security Overview</button>
+    <button class="nav-btn" data-tab="url">2. URL Threat Scanner</button>
+    <button class="nav-btn" data-tab="sms">3. SMS Scam Analyzer</button>
+    <button class="nav-btn" data-tab="network">4. Network Analyzer</button>
+    <button class="nav-btn" data-tab="pcap">5. PCAP Upload & Replay</button>
+    <button class="nav-btn" data-tab="demo">6. Unified Intelligence & Demo</button>
+    <button class="nav-btn" data-tab="incidents">7. Incident History</button>
+    <button class="nav-btn" data-tab="incident-detail">8. Incident Detail & Export</button>
+    <button class="nav-btn" data-tab="benchmarks">9. Performance Benchmarks</button>
+    <button class="nav-btn" data-tab="system">10. System & Offline Status</button>
   </aside>
 
-  <!-- Main Content -->
-  <div class="main-content">
+  <main>
     <header class="topbar">
       <div>
-        <strong>SecureEdge AI</strong> — Intelligent On-Device Threat, Phishing &amp; Scam Detection
+        <h2 style="margin:0;">On-Device Threat, Phishing & Scam Detection</h2>
+        <div class="muted" id="connectivity-banner">Checking local status...</div>
       </div>
-      <div class="status-pills">
-        <span class="pill pill-green" id="pill-connectivity">Checking Mode...</span>
-        <span class="pill pill-blue" id="pill-pte">ExecuTorch .pte: Verifying...</span>
-        <span class="pill pill-amber" id="pill-arch">Platform: Detecting...</span>
+      <div>
+        <span class="pill ok">Default: FAST TRIAGE (Zero LLM)</span>
+        <span class="pill" id="host-arch-pill">Host Prototype</span>
       </div>
     </header>
 
-    <main class="page-container">
-      <!-- 1. DASHBOARD -->
-      <section id="tab-dashboard" class="section-view active">
-        <div class="section-header">
-          <h1>On-Device Cybersecurity Posture Dashboard</h1>
-          <p>Real-time telemetry across URL Phishing, SMS Scam, and Passive Network Flow Detectors backed by Local Llama + ExecuTorch Advisory.</p>
-        </div>
+    <!-- 1. Security Overview -->
+    <section id="tab-overview" class="section active">
+      <div class="disclaimer">
+        <strong>Competition &amp; Scope Notice:</strong> Evaluated on synthetic and curated local datasets on a Windows x86_64 CPU-only host.
+        Optional DEEP ANALYSIS uses the SmolLM2-135M comparison static graph; Meta Llama 3.2 ExecuTorch and ARM64 hardware execution are not verified on this machine.
+      </div>
+      <div class="grid">
+        <div class="card"><div class="muted">Total Incidents</div><div class="kpi-val" id="kpi-total">0</div></div>
+        <div class="card"><div class="muted">Confirmed Malicious</div><div class="kpi-val" style="color:var(--danger)" id="kpi-mal">0</div></div>
+        <div class="card"><div class="muted">Suspicious / Abstained</div><div class="kpi-val" style="color:var(--warn)" id="kpi-susp">0</div></div>
+        <div class="card"><div class="muted">Normal / Benign</div><div class="kpi-val" style="color:var(--ok)" id="kpi-ok">0</div></div>
+      </div>
+      <div class="card">
+        <h3 style="margin-top:0;">Quick Actions</h3>
+        <p class="muted">All scanners default to offline <strong>FAST TRIAGE</strong> with calibrated probabilities, abstention support, and automatic incident correlation.</p>
+        <button class="primary" onclick="switchTab('demo')">Open 1-Click Synthetic Demo Scenarios</button>
+        <button class="secondary" onclick="switchTab('incidents')">View Correlated Incidents</button>
+      </div>
+    </section>
 
-        <div class="grid-4">
-          <div class="card">
-            <div class="card-title">Total Local Scans</div>
-            <div class="stat-value" id="stat-total-scans">0</div>
-            <div class="stat-sub">Processed 100% on-device</div>
-          </div>
-          <div class="card">
-            <div class="card-title">Threats Flagged</div>
-            <div class="stat-value" style="color: var(--status-malicious);" id="stat-threats">0</div>
-            <div class="stat-sub" id="stat-threats-breakdown">0 Malicious / 0 Suspicious</div>
-          </div>
-          <div class="card">
-            <div class="card-title">Benign Cleared</div>
-            <div class="stat-value" style="color: var(--status-benign);" id="stat-benign">0</div>
-            <div class="stat-sub">Verified low-risk inputs</div>
-          </div>
-          <div class="card">
-            <div class="card-title">Llama ExecuTorch (.pte)</div>
-            <div class="stat-value" style="color: var(--accent-blue); font-size: 1.35rem;" id="stat-pte-status">READY</div>
-            <div class="stat-sub" id="stat-pte-sub">Static ATen/XNNPACK Graph</div>
-          </div>
-        </div>
+    <!-- 2. URL Scanner -->
+    <section id="tab-url" class="section">
+      <div class="card">
+        <h3 style="margin-top:0;">Hardened URL Phishing Scanner (Offline Lexical + IDN/Homograph)</h3>
+        <p class="muted">Zero automatic remote URL fetching. Analyzes Punycode, Cyrillic/Greek confusables, brand impersonation, mixed-case, and encoded redirect parameters locally.</p>
+        <label for="url-input">Target URL (max 2048 chars)</label>
+        <input type="text" id="url-input" placeholder="https://раypal-security.com/account/login" />
+        <label for="url-mode">Operating Mode</label>
+        <select id="url-mode">
+          <option value="fast_triage" selected>FAST TRIAGE (Default — Deterministic Policy, Zero LLM)</option>
+          <option value="deep_analysis">DEEP ANALYSIS (Optional Local SmolLM2-135M + Deterministic Fallback)</option>
+        </select>
+        <button class="primary" onclick="runUrlScan()">Scan URL</button>
+        <div id="url-result"></div>
+      </div>
+    </section>
 
-        <div class="grid-2">
-          <div class="card">
-            <div class="card-title">Risk Level Distribution</div>
-            <div id="risk-bars-container"></div>
-          </div>
-          <div class="card">
-            <div class="card-title">Detection Modality Breakdown</div>
-            <div id="source-bars-container"></div>
-          </div>
-        </div>
+    <!-- 3. SMS Analyzer -->
+    <section id="tab-sms" class="section">
+      <div class="card">
+        <h3 style="margin-top:0;">Hardened SMS Scam Analyzer</h3>
+        <p class="muted">Detects zero-width chars, Unicode confusables, spaced text, leetspeak, and Hinglish scam lures while preserving legitimate OTPs and bank alerts.</p>
+        <label for="sms-input">SMS Message Text (max 5000 chars)</label>
+        <textarea id="sms-input" rows="4" placeholder="U R G E N T: Your SBI k y c is e x p i r e d..."></textarea>
+        <label for="sms-mode">Operating Mode</label>
+        <select id="sms-mode">
+          <option value="fast_triage" selected>FAST TRIAGE (Default — Zero LLM)</option>
+          <option value="deep_analysis">DEEP ANALYSIS (Optional Local LLM + Fallback)</option>
+        </select>
+        <button class="primary" onclick="runSmsScan()">Analyze SMS</button>
+        <div id="sms-result"></div>
+      </div>
+    </section>
 
-        <div class="card">
-          <div class="card-title">Most Recent Inspection &amp; Local Llama Advisory</div>
-          <div id="latest-scan-container">Loading latest telemetry...</div>
-        </div>
-      </section>
+    <!-- 4. Network Analyzer -->
+    <section id="tab-network" class="section">
+      <div class="card">
+        <h3 style="margin-top:0;">Context-Aware Network Flow Analyzer</h3>
+        <p class="muted">Separates supervised probability from IsolationForest anomaly score and host MAD baselines to prevent microservice-burst false positives.</p>
+        <label for="net-json">Flow Telemetry JSON</label>
+        <textarea id="net-json" rows="7">{
+  "src_ip": "192.168.1.15",
+  "dst_ip": "192.168.1.20",
+  "flow_duration_sec": 0.30,
+  "packet_count": 48,
+  "byte_count": 10560,
+  "syn_flag_ratio": 0.14,
+  "ack_flag_ratio": 0.78,
+  "rst_flag_ratio": 0.04,
+  "unique_dst_ports_window": 5,
+  "connection_frequency": 12,
+  "payload_byte_ratio": 0.58
+}</textarea>
+        <label for="net-mode">Operating Mode</label>
+        <select id="net-mode">
+          <option value="fast_triage" selected>FAST TRIAGE (Default — Zero LLM)</option>
+          <option value="deep_analysis">DEEP ANALYSIS (Optional Local LLM + Fallback)</option>
+        </select>
+        <button class="primary" onclick="runNetworkScan()">Analyze Flow</button>
+        <div id="net-result"></div>
+      </div>
+    </section>
 
-      <!-- 2. URL PHISHING SCANNER -->
-      <section id="tab-url-scanner" class="section-view">
-        <div class="section-header">
-          <h1>URL Phishing Scanner (Priority 1 Detector)</h1>
-          <p>Extracts 32 domain-agnostic lexical, structural, TLD, entropy, and brand-impersonation indicators + Calibrated Random Forest inference + Local Llama explanation.</p>
-        </div>
-        <div class="card">
-          <div class="input-group">
-            <label for="url-input">Enter URL to Inspect Locally:</label>
-            <input type="text" id="url-input" placeholder="e.g., http://sbi.secure-login.verify-update.auth-gateway.xyz/kyc-update/confirm.html" />
-          </div>
-          <div class="btn-row">
-            <button class="btn btn-primary" onclick="scanURL()">Analyze URL On-Device</button>
-            <button class="btn btn-secondary" onclick="setURLPreset('http://sbi.secure-login.verify-update.auth-gateway-99.xyz/kyc-update/pan-aadhaar-link/confirm-otp.html')">Preset: Banking KYC Phishing</button>
-            <button class="btn btn-secondary" onclick="setURLPreset('http://198.51.100.42:8080/paypal/login-verify/index.html')">Preset: Raw IP Credential Harvester</button>
-            <button class="btn btn-secondary" onclick="setURLPreset('https://www.india.gov.in/citizens/services/online-application-status')">Preset: Benign Government Portal</button>
-          </div>
-        </div>
-        <div id="url-result-area"></div>
-      </section>
+    <!-- 5. PCAP Upload & Replay -->
+    <section id="tab-pcap" class="section">
+      <div class="card">
+        <h3 style="margin-top:0;">PCAP Upload & Offline Replay</h3>
+        <p class="muted">Uploads are strictly bounded (2 MB max), validated by extension and PCAP magic bytes, and parsed inside an isolated temporary directory.</p>
+        <input type="file" id="pcap-file" accept=".pcap,.pcapng,.cap" />
+        <button class="primary" onclick="uploadPcap()">Upload & Analyze PCAP</button>
+        <button class="secondary" onclick="replaySamplePcap()">Replay Bundled sample_network_traffic.pcap</button>
+        <div id="pcap-result"></div>
+      </div>
+    </section>
 
-      <!-- 3. SMS SCAM DETECTOR -->
-      <section id="tab-sms-detector" class="section-view">
-        <div class="section-header">
-          <h1>SMS Scam &amp; Fraud Detector (Priority 2 Detector)</h1>
-          <p>Hybrid Word/Char N-Gram TF-IDF + 12 Structural Financial/Urgency/Coercion Indicators distinguishing financial scams from promotional spam and legitimate OTPs.</p>
-        </div>
-        <div class="card">
-          <div class="input-group">
-            <label for="sms-input">Enter SMS / Messaging Text to Inspect Locally:</label>
-            <textarea id="sms-input" placeholder="Paste suspicious SMS or message here..."></textarea>
-          </div>
-          <div class="btn-row">
-            <button class="btn btn-primary" onclick="scanSMS()">Analyze SMS On-Device</button>
-            <button class="btn btn-secondary" onclick="setSMSPreset('URGENT: Your HDFC account will be blocked today as your PAN card & KYC is expired! Click http://hdfc-kyc-update.xyz/login immediately to verify.')">Preset: KYC Bank Block Scam</button>
-            <button class="btn btn-secondary" onclick="setSMSPreset('CONGRATULATIONS! Your mobile number won Rs. 25,00,000 in KBC Lucky Draw! To claim prize money contact WhatsApp +91 8899114321 now!')">Preset: Lottery / Prize Fraud</button>
-            <button class="btn btn-secondary" onclick="setSMSPreset('Your OTP for SBI NetBanking login is 482910. Do not share this OTP with anyone. Valid for 10 minutes.')">Preset: Legitimate Banking OTP</button>
-          </div>
-        </div>
-        <div id="sms-result-area"></div>
-      </section>
+    <!-- 6. Unified Intelligence & Demo Mode -->
+    <section id="tab-demo" class="section">
+      <div class="card">
+        <h3 style="margin-top:0;">Controlled Offline Synthetic Demonstration Mode</h3>
+        <p class="muted">Every scenario below is a <strong>clearly labelled synthetic offline example</strong>. Scenarios 5, 6, and 9 share <code>sbi-kyc-update99.xyz</code> to demonstrate cross-modality incident correlation.</p>
+        <label for="demo-mode">Execution Mode</label>
+        <select id="demo-mode" style="max-width:420px;">
+          <option value="fast_triage" selected>FAST TRIAGE (Default — Instant, Zero LLM)</option>
+          <option value="deep_analysis">DEEP ANALYSIS (Optional SmolLM2-135M + Deterministic Fallback)</option>
+        </select>
+        <div id="demo-list" style="margin-top:14px;"></div>
+        <div id="demo-result"></div>
+      </div>
+    </section>
 
-      <!-- 4. NETWORK MONITOR -->
-      <section id="tab-network-monitor" class="section-view">
-        <div class="section-header">
-          <h1>Passive Network Flow Anomaly Monitor (Priority 3 Detector)</h1>
-          <p>Scapy packet flow extractor + Supervised Calibrated Random Forest + Unsupervised Isolation Forest. Explicitly distinguishes Live Capture from Recorded PCAP Replay.</p>
-        </div>
-        <div class="card">
-          <div class="card-title">Network Inspection Controls</div>
-          <div class="btn-row">
-            <button class="btn btn-primary" onclick="scanNetwork('replay_demo')">Run Scapy PCAP Replay (sample_network_traffic.pcap)</button>
-            <button class="btn btn-secondary" onclick="scanNetwork('live_capture')">Attempt Passive Live Scapy Sniff (1.5s Window)</button>
-            <button class="btn btn-secondary" onclick="scanCustomSYNFlood()">Inspect Custom SYN Flood Flow</button>
+    <!-- 7. Incident History -->
+    <section id="tab-incidents" class="section">
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <h3 style="margin:0;">Correlated Incident History</h3>
+          <div>
+            <button class="secondary" onclick="loadIncidents()">Refresh</button>
+            <button class="secondary" onclick="clearIncidents()">Clear History</button>
           </div>
-          <div id="net-mode-banner" style="margin-top: 12px; font-size: 0.85rem; color: var(--text-secondary);"></div>
         </div>
-        <div id="network-result-area"></div>
-      </section>
+        <p class="muted">Correlations are created strictly on exact URL, exact registered domain, or exact IP address matches (LLM-independent).</p>
+        <table>
+          <thead>
+            <tr><th>Incident ID</th><th>Severity</th><th>State</th><th>Obs</th><th>Correlated Entities</th><th>Updated</th><th>Action</th></tr>
+          </thead>
+          <tbody id="incidents-tbody"></tbody>
+        </table>
+      </div>
+    </section>
 
-      <!-- 5. AI THREAT EXPLANATION (LLAMA + EXECUTORCH) -->
-      <section id="tab-llama-advisor" class="section-view">
-        <div class="section-header">
-          <h1>Local Llama + ExecuTorch Threat Explanation Engine (Priority 4)</h1>
-          <p>Directly inspect the bounded JSON input/output contract for our LlamaForCausalLM model exported via torch.export / ExecuTorch (.pte). Llama explains detector evidence and never overrides detector verdicts.</p>
-        </div>
-        <div class="grid-2">
-          <div class="card">
-            <div class="card-title">Structured Detector Evidence Input</div>
-            <div class="input-group">
-              <label>Threat Type:</label>
-              <select id="llama-threat-type">
-                <option value="phishing">phishing</option>
-                <option value="scam">scam</option>
-                <option value="network_anomaly">network_anomaly</option>
-                <option value="benign">benign</option>
-              </select>
-            </div>
-            <div class="input-group">
-              <label>Risk Level (Locked by Detector):</label>
-              <select id="llama-risk-level">
-                <option value="high">high</option>
-                <option value="critical">critical</option>
-                <option value="medium">medium</option>
-                <option value="low">low</option>
-              </select>
-            </div>
-            <div class="input-group">
-              <label>Detector Confidence (0.0 - 1.0):</label>
-              <input type="text" id="llama-confidence" value="0.94" />
-            </div>
-            <div class="input-group">
-              <label>Forensic Evidence List (One per line):</label>
-              <textarea id="llama-evidence">Suspicious URL structure
-Credential-related path
-Unusual hostname characteristics</textarea>
-            </div>
-            <button class="btn btn-primary" onclick="runLlamaAdvisor()">Execute Local Llama (.pte) Inference</button>
-          </div>
-          <div class="card">
-            <div class="card-title">Validated ExecuTorch Llama Output &amp; Telemetry</div>
-            <div id="llama-direct-output">Click "Execute Local Llama (.pte) Inference" to inspect structured output and latency.</div>
-          </div>
-        </div>
-      </section>
+    <!-- 8. Incident Detail & Export -->
+    <section id="tab-incident-detail" class="section">
+      <div class="card">
+        <h3 style="margin-top:0;">Incident Detail & Safe Report Export</h3>
+        <label><input type="checkbox" id="redact-toggle" checked /> Redact phone numbers, OTPs, query tokens, and partial IPv4 addresses before export</label>
+        <div id="incident-detail-body" class="muted">Select an incident from Incident History (or run a scan) to inspect evidence and export JSON/Markdown reports.</div>
+      </div>
+    </section>
 
-      <!-- 6. DETECTION HISTORY -->
-      <section id="tab-history" class="section-view">
-        <div class="section-header">
-          <h1>Local Detection Audit History</h1>
-          <p>Persistent on-device log of all inspected URLs, SMS messages, and network flows.</p>
-        </div>
-        <div class="card">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-            <div class="card-title" style="margin:0;">Recorded Inspections</div>
-            <button class="btn btn-danger" onclick="clearHistory()">Clear Audit Log</button>
-          </div>
-          <div style="overflow-x:auto;">
-            <table>
-              <thead>
-                <tr>
-                  <th>UTC Timestamp</th>
-                  <th>Source</th>
-                  <th>Input Summary</th>
-                  <th>Classification</th>
-                  <th>Risk Score</th>
-                  <th>Confidence</th>
-                  <th>Latency</th>
-                  <th>Mode</th>
-                </tr>
-              </thead>
-              <tbody id="history-table-body"></tbody>
-            </table>
-          </div>
-        </div>
-      </section>
+    <!-- 9. Benchmarks -->
+    <section id="tab-benchmarks" class="section">
+      <div class="card">
+        <h3 style="margin-top:0;">Verified Evaluation & Edge Performance Benchmarks</h3>
+        <div id="benchmarks-body" class="muted">Loading verified Phase 1–3 benchmarks...</div>
+      </div>
+    </section>
 
-      <!-- 7. SYSTEM INFORMATION -->
-      <section id="tab-sys-info" class="section-view">
-        <div class="section-header">
-          <h1>Hardware, Runtime &amp; ARM Deployment Telemetry</h1>
-          <p>Live verification of host hardware, memory consumption, offline state, and ExecuTorch .pte artifact status.</p>
-        </div>
-        <div id="sys-info-container">Loading system telemetry...</div>
-      </section>
-
-      <!-- 8. EDGE PERFORMANCE BENCHMARKS -->
-      <section id="tab-benchmarks" class="section-view">
-        <div class="section-header">
-          <h1>Edge Performance Benchmarks &amp; Evaluation Metrics</h1>
-          <p>Unseen test-set classification metrics, latency breakdown, memory footprint, and confusion matrices.</p>
-        </div>
-        <div id="benchmarks-container">Loading benchmark tables and figures...</div>
-      </section>
-    </main>
-  </div>
+    <!-- 10. System & Offline Status -->
+    <section id="tab-system" class="section">
+      <div class="card">
+        <h3 style="margin-top:0;">System, Model & Offline Readiness Status</h3>
+        <div id="system-body" class="muted">Loading system telemetry...</div>
+      </div>
+    </section>
+  </main>
 
   <script>
-    function escapeHtml(str) {
-      if (str === null || str === undefined) return '';
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
+    let currentIncidentId = null;
+
+    function esc(s) {
+      if (s === null || s === undefined) return "";
+      return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
     }
 
-    function switchTab(tabId, el) {
-      document.querySelectorAll('.section-view').forEach(s => s.classList.remove('active'));
-      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-      document.getElementById('tab-' + tabId).classList.add('active');
-      if (el) el.classList.add('active');
-      if (tabId === 'dashboard' || tabId === 'sys-info') loadStatus();
-      if (tabId === 'history') loadHistory();
-      if (tabId === 'benchmarks') loadBenchmarks();
+    function statePill(state) {
+      if (state === "confirmed_malicious") return `<span class="pill danger">${esc(state)}</span>`;
+      if (state === "suspicious_unknown") return `<span class="pill warn">${esc(state)}</span>`;
+      if (state === "insufficient_evidence") return `<span class="pill abstain">${esc(state)}</span>`;
+      return `<span class="pill ok">${esc(state)}</span>`;
     }
 
-    function renderReportCard(rep) {
-      const det = rep.detector_result;
-      const llm = rep.llama_output;
-      const vClass = det.classification === 'malicious' ? 'verdict-malicious' : (det.classification === 'suspicious' ? 'verdict-suspicious' : 'verdict-benign');
-      const evItems = (det.evidence || []).map(e => `<li>${escapeHtml(e)}</li>`).join('');
+    function switchTab(name) {
+      document.querySelectorAll(".nav-btn").forEach(b => b.classList.toggle("active", b.dataset.tab === name));
+      document.querySelectorAll(".section").forEach(s => s.classList.toggle("active", s.id === "tab-" + name));
+      if (name === "incidents") loadIncidents();
+      if (name === "benchmarks") loadBenchmarks();
+      if (name === "system" || name === "overview") loadStatus();
+      if (name === "demo") loadDemoScenarios();
+    }
+
+    document.querySelectorAll(".nav-btn").forEach(btn => {
+      btn.addEventListener("click", () => switchTab(btn.dataset.tab));
+    });
+
+    function renderAssessment(a, inc) {
+      const anom = a.anomaly_score !== null && a.anomaly_score !== undefined ? a.anomaly_score : "N/A";
+      const evItems = (a.deduplicated_evidence || []).map(e => `<li>${esc(e)}</li>`).join("");
+      const reasonItems = (a.policy_reasoning || []).map(r => `<li>${esc(r)}</li>`).join("");
       return `
-        <div class="card">
-          <div class="verdict-banner ${vClass}">
-            <div>VERDICT: ${escapeHtml(det.classification.toUpperCase())} (${escapeHtml(det.threat_type.toUpperCase())})</div>
-            <div>RISK SCORE: ${Number(det.risk_score)}/100 (${escapeHtml(det.risk_level ? det.risk_level.toUpperCase() : '')}) | CONFIDENCE: ${(det.confidence * 100).toFixed(1)}%</div>
+        <div class="result-box">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+            <div>${statePill(a.decision_state)} <span class="pill">Risk: ${esc(a.risk_level.toUpperCase())} (${esc(a.risk_score)}/100)</span></div>
+            <div class="muted">Incident: <a href="#" style="color:var(--accent)" onclick="inspectIncident('${esc(inc.incident_id)}'); return false;">${esc(inc.incident_id)}</a> | Latency: ${esc(a.total_latency_ms)} ms</div>
           </div>
-          <div class="grid-2">
-            <div>
-              <div class="card-title">Specialized Detector Evidence (${escapeHtml(det.model_version)})</div>
-              <p style="font-size:0.84rem; color:var(--text-secondary); margin-bottom:8px;">
-                <strong>Input:</strong> ${escapeHtml(det.raw_input_summary)}<br/>
-                <strong>Execution Mode:</strong> ${escapeHtml(rep.execution_mode)} | <strong>Detector Latency:</strong> ${Number(det.inference_latency_ms)} ms
-              </p>
-              <ul class="evidence-list">${evItems}</ul>
-            </div>
-            <div>
-              <div class="llama-box" style="margin-top:0;">
-                <h4>Local Llama + ExecuTorch Advisory (${escapeHtml(llm.runtime_backend)})</h4>
-                <p style="font-size:0.9rem; margin-bottom:10px;"><strong>Explanation:</strong> ${escapeHtml(llm.explanation)}</p>
-                <p style="font-size:0.9rem; margin-bottom:8px;"><strong>Recommended Action:</strong> ${escapeHtml(llm.recommendation)}</p>
-                <p style="font-size:0.78rem; color:var(--text-secondary);">
-                  .pte Verified: ${llm.pte_artifact_verified ? 'YES' : 'NO'} | LLM Latency: ${Number(llm.generation_latency_ms)} ms | Total Pipeline: ${Number(rep.total_pipeline_latency_ms)} ms
-                </p>
-              </div>
-            </div>
-          </div>
-          <details style="margin-top:10px;">
-            <summary style="cursor:pointer; font-size:0.82rem; color:var(--accent-blue);">Inspect Canonical PS3 JSON Schema Output</summary>
-            <pre style="margin-top:8px;">${escapeHtml(JSON.stringify({detector_schema: {source: det.source, threat_type: det.threat_type, classification: det.classification, confidence: det.confidence, risk_score: det.risk_score, evidence: det.evidence, timestamp: det.timestamp, model_version: det.model_version}, llama_schema: {explanation: llm.explanation, recommendation: llm.recommendation, risk_level: llm.risk_level}}, null, 2))}</pre>
-          </details>
+          <p style="margin:10px 0 4px;"><strong>Supervised Probability:</strong> ${esc(a.supervised_probability)} | <strong>Anomaly Score:</strong> ${esc(anom)} | <strong>Calibrated:</strong> ${esc(a.is_calibrated)}</p>
+          <p style="margin:4px 0;"><strong>Operating Mode:</strong> ${esc(a.operating_mode)} | <strong>LLM Used:</strong> ${esc(a.llm_used)} (${esc(a.llm_backend)})</p>
+          <p style="margin:4px 0;"><strong>Explanation:</strong> ${esc(a.explanation)}</p>
+          <p style="margin:4px 0;"><strong>Recommended Action:</strong> ${esc(a.recommendation)}</p>
+          <div style="margin-top:8px;"><strong>Forensic Evidence:</strong><ul class="clean">${evItems}</ul></div>
+          <div style="margin-top:8px;"><strong>Policy Reasoning:</strong><ul class="clean">${reasonItems}</ul></div>
         </div>
+      `;
+    }
+
+    async function runUrlScan() {
+      const url = document.getElementById("url-input").value;
+      const mode = document.getElementById("url-mode").value;
+      const res = await fetch("/api/v2/analyze/url", { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({url, mode}) });
+      const data = await res.json();
+      document.getElementById("url-result").innerHTML = data.status === "ok" ? renderAssessment(data.assessment, data.incident) : `<div class="result-box">${esc(data.message)}</div>`;
+      loadStatus();
+    }
+
+    async function runSmsScan() {
+      const sms_text = document.getElementById("sms-input").value;
+      const mode = document.getElementById("sms-mode").value;
+      const res = await fetch("/api/v2/analyze/sms", { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({sms_text, mode}) });
+      const data = await res.json();
+      document.getElementById("sms-result").innerHTML = data.status === "ok" ? renderAssessment(data.assessment, data.incident) : `<div class="result-box">${esc(data.message)}</div>`;
+      loadStatus();
+    }
+
+    async function runNetworkScan() {
+      let flow;
+      try { flow = JSON.parse(document.getElementById("net-json").value); }
+      catch (e) { document.getElementById("net-result").innerHTML = `<div class="result-box">Invalid JSON telemetry.</div>`; return; }
+      const mode = document.getElementById("net-mode").value;
+      const res = await fetch("/api/v2/analyze/network", { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({flow, mode}) });
+      const data = await res.json();
+      document.getElementById("net-result").innerHTML = data.status === "ok" ? renderAssessment(data.assessment, data.incident) : `<div class="result-box">${esc(data.message)}</div>`;
+      loadStatus();
+    }
+
+    async function uploadPcap() {
+      const fileInput = document.getElementById("pcap-file");
+      if (!fileInput.files.length) { document.getElementById("pcap-result").innerHTML = `<div class="result-box">Choose a .pcap file first.</div>`; return; }
+      const fd = new FormData();
+      fd.append("file", fileInput.files[0]);
+      const res = await fetch("/api/v2/pcap/upload", { method: "POST", body: fd });
+      const data = await res.json();
+      if (data.status !== "ok") { document.getElementById("pcap-result").innerHTML = `<div class="result-box">${esc(data.message)}</div>`; return; }
+      const rows = (data.results || []).map(r => `<tr><td>${esc(r.flow.src_ip)} → ${esc(r.flow.dst_ip)}</td><td>${statePill(r.assessment.decision_state)}</td><td>${esc(r.assessment.risk_score)}</td><td>${esc(r.incident_id)}</td></tr>`).join("");
+      document.getElementById("pcap-result").innerHTML = `<div class="result-box"><strong>Parsed ${esc(data.flow_count)} flows from ${esc(data.filename)}</strong><table><thead><tr><th>Flow</th><th>State</th><th>Score</th><th>Incident</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+      loadStatus();
+    }
+
+    async function replaySamplePcap() {
+      const res = await fetch("/api/v2/pcap/sample", { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({mode:"fast_triage"}) });
+      const data = await res.json();
+      const rows = (data.results || []).map(r => `<tr><td>${esc(r.flow.src_ip)} → ${esc(r.flow.dst_ip)}</td><td>${statePill(r.assessment.decision_state)}</td><td>${esc(r.assessment.risk_score)}</td><td>${esc(r.incident_id)}</td></tr>`).join("");
+      document.getElementById("pcap-result").innerHTML = `<div class="result-box"><strong>Replayed ${esc(data.flow_count)} flows from ${esc(data.filename)}</strong><table><thead><tr><th>Flow</th><th>State</th><th>Score</th><th>Incident</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+      loadStatus();
+    }
+
+    async function loadDemoScenarios() {
+      const res = await fetch("/api/v2/demo/scenarios");
+      const data = await res.json();
+      const html = (data.scenarios || []).map(s => `
+        <div class="result-box" style="display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:8px;">
+          <div>
+            <strong>${esc(s.title)}</strong> <span class="pill">${esc(s.category.toUpperCase())}</span> <span class="pill">${esc(s.provenance)}</span>
+            <div class="muted" style="margin-top:4px;">${esc(s.description)} (Expected: <code>${esc(s.expected_state)}</code>)</div>
+          </div>
+          <button class="primary" style="margin-top:0; white-space:nowrap;" onclick="runDemoScenario('${esc(s.id)}')">Run Scenario</button>
+        </div>
+      `).join("");
+      document.getElementById("demo-list").innerHTML = html;
+    }
+
+    async function runDemoScenario(id) {
+      const mode = document.getElementById("demo-mode").value;
+      const res = await fetch("/api/v2/demo/run", { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({scenario_id: id, mode}) });
+      const data = await res.json();
+      document.getElementById("demo-result").innerHTML = data.status === "ok" ? renderAssessment(data.assessment, data.incident) : `<div class="result-box">${esc(data.message)}</div>`;
+      loadStatus();
+    }
+
+    async function loadIncidents() {
+      const res = await fetch("/api/v2/incidents");
+      const data = await res.json();
+      const rows = (data.incidents || []).map(i => `
+        <tr>
+          <td><strong>${esc(i.incident_id)}</strong></td>
+          <td>${esc(i.severity.toUpperCase())}</td>
+          <td>${statePill(i.decision_state)}</td>
+          <td>${esc(i.observations.length)}</td>
+          <td>${esc((i.correlated_entities || []).map(c => c.relation_type + ":" + c.matched_value).join(", ") || "None")}</td>
+          <td class="muted">${esc(i.updated_at.slice(0,19))}</td>
+          <td><button class="secondary" style="margin:0;" onclick="inspectIncident('${esc(i.incident_id)}')">Inspect</button></td>
+        </tr>
+      `).join("");
+      document.getElementById("incidents-tbody").innerHTML = rows || `<tr><td colspan="7" class="muted">No incidents recorded yet.</td></tr>`;
+    }
+
+    async function clearIncidents() {
+      await fetch("/api/v2/incidents", { method: "DELETE" });
+      loadIncidents();
+      loadStatus();
+    }
+
+    async function inspectIncident(id) {
+      currentIncidentId = id;
+      switchTab("incident-detail");
+      const res = await fetch("/api/v2/incidents/" + encodeURIComponent(id));
+      const data = await res.json();
+      if (data.status !== "ok") return;
+      const i = data.incident;
+      const obsHtml = i.observations.map(o => `
+        <div class="result-box">
+          <strong>${esc(o.observation_id)}</strong> (${esc(o.source.toUpperCase())}) — ${statePill(o.decision_state)}
+          <div class="muted">Detector: ${esc(o.detector_name)} | Mode: ${esc(o.operating_mode)} | LLM: ${esc(o.llm_used)} (${esc(o.llm_backend)})</div>
+          <p style="margin:6px 0;"><strong>Input:</strong> <code>${esc(o.raw_summary)}</code></p>
+          <ul class="clean">${o.evidence.map(e => `<li>${esc(e)}</li>`).join("")}</ul>
+        </div>
+      `).join("");
+      const tlHtml = i.timeline.map(t => `<li><code>${esc(t.timestamp.slice(0,19))}</code> — ${esc(t.event)}</li>`).join("");
+      document.getElementById("incident-detail-body").innerHTML = `
+        <div style="margin-top:10px;">
+          <h4 style="margin:0 0 6px;">${esc(i.incident_id)} — ${esc(i.title)}</h4>
+          <p><strong>Recommended Action:</strong> ${esc(i.recommended_action)}</p>
+          <div style="display:flex; gap:10px; margin-bottom:12px;">
+            <button class="primary" style="margin:0;" onclick="exportIncident('json')">Download JSON Report</button>
+            <button class="secondary" style="margin:0;" onclick="exportIncident('markdown')">Download Markdown Report</button>
+          </div>
+          <strong>Timeline:</strong><ul class="clean">${tlHtml}</ul>
+          <h4 style="margin:14px 0 6px;">Observations (${esc(i.observations.length)})</h4>
+          ${obsHtml}
+        </div>
+      `;
+    }
+
+    function exportIncident(fmt) {
+      if (!currentIncidentId) return;
+      const redact = document.getElementById("redact-toggle").checked ? "true" : "false";
+      window.location.href = `/api/v2/incidents/${encodeURIComponent(currentIncidentId)}/export?format=${fmt}&redact=${redact}`;
+    }
+
+    async function loadBenchmarks() {
+      const res = await fetch("/api/v2/benchmarks");
+      const d = await res.json();
+      const m = d.metadata || {};
+      const p3 = d.phase3 || {};
+      const smsH = (p3.sms && p3.sms.hardened_sms) || {};
+      const urlH = (p3.url && p3.url.hardened_url) || {};
+      const netH = (p3.network && p3.network.phase3_context_aware) || {};
+      const bench = p3.operating_modes_benchmark || {};
+      document.getElementById("benchmarks-body").innerHTML = `
+        <div class="disclaimer">
+          <strong>Evaluation Provenance (${esc(m.evaluation_date)}):</strong> ${esc(m.dataset_provenance)}<br/>
+          <strong>Splits:</strong> ${esc(m.split_methodology)}<br/>
+          <strong>Hardware:</strong> ${esc(m.hardware_used)} | <strong>LLM Note:</strong> ${esc(m.llm_comparison_model)}
+        </div>
+        <table>
+          <thead><tr><th>Detector / Mode</th><th>Clean Macro F1</th><th>Adv / Unseen Recall</th><th>Adv / Unseen FPR</th><th>P50 / P95 Latency</th><th>Artifact Size</th></tr></thead>
+          <tbody>
+            <tr><td>Hardened SMS (v3)</td><td>${esc(smsH.clean?.macro_f1)}</td><td>${esc(smsH.adversarial?.recall)} (Adv)</td><td>${esc(smsH.adversarial?.fpr)} (Adv)</td><td>${esc(smsH.adversarial?.p50_latency_ms)} / ${esc(smsH.adversarial?.p95_latency_ms)} ms</td><td>${esc(smsH.model_size_mb)} MB</td></tr>
+            <tr><td>Hardened URL (v3)</td><td>${esc(urlH.clean?.macro_f1)}</td><td>${esc(urlH.adversarial?.recall)} (Adv)</td><td>${esc(urlH.adversarial?.fpr)} (Adv incl. shorteners)</td><td>${esc(urlH.adversarial?.p50_latency_ms)} / ${esc(urlH.adversarial?.p95_latency_ms)} ms</td><td>${esc(urlH.model_size_mb)} MB</td></tr>
+            <tr><td>Context-Aware Net (v3 Unseen Alert)</td><td>${esc(netH.known?.alert_confirmed_or_suspicious?.macro_f1)} (Known)</td><td>${esc(netH.unseen?.alert_confirmed_or_suspicious?.recall)} (Unseen)</td><td>${esc(netH.unseen?.alert_confirmed_or_suspicious?.fpr)} (Unseen)</td><td>${esc(netH.unseen?.alert_confirmed_or_suspicious?.p50_latency_ms)} / ${esc(netH.unseen?.alert_confirmed_or_suspicious?.p95_latency_ms)} ms</td><td>${esc(netH.model_size_mb)} MB</td></tr>
+            <tr><td>FAST TRIAGE Engine (Zero LLM)</td><td>—</td><td>—</td><td>—</td><td>${esc(bench.fast_triage?.p50_ms)} / ${esc(bench.fast_triage?.p95_ms)} ms</td><td>RSS ${esc(bench.fast_triage?.rss_mb)} MB</td></tr>
+            <tr><td>DEEP ANALYSIS (SmolLM2-135M)</td><td>—</td><td>—</td><td>—</td><td>${esc(bench.deep_analysis?.p50_ms)} / ${esc(bench.deep_analysis?.p95_ms)} ms</td><td>RSS ${esc(bench.deep_analysis?.rss_mb)} MB</td></tr>
+          </tbody>
+        </table>
       `;
     }
 
     async function loadStatus() {
-      const res = await fetch('/api/status');
-      const data = await res.json();
-      const sys = data.system;
-      const sum = data.summary;
+      const res = await fetch("/api/status");
+      const d = await res.json();
+      const s = d.system || {};
+      const sum = d.summary || {};
+      document.getElementById("connectivity-banner").textContent = s.connectivity_mode || "";
+      document.getElementById("host-arch-pill").textContent = s.hardware_mode_label || "Host";
+      document.getElementById("kpi-total").textContent = sum.total_incidents ?? 0;
+      document.getElementById("kpi-mal").textContent = sum.malicious_detections ?? 0;
+      document.getElementById("kpi-susp").textContent = (sum.suspicious_detections ?? 0) + (sum.abstained_detections ?? 0);
+      document.getElementById("kpi-ok").textContent = sum.benign_detections ?? 0;
 
-      document.getElementById('pill-connectivity').textContent = sys.connectivity_mode;
-      document.getElementById('pill-pte').textContent = `ExecuTorch .pte: ${sys.models_status.llama_executorch.pte_verified ? 'VERIFIED (' + sys.models_status.llama_executorch.pte_size_mb + ' MB)' : 'MISSING'}`;
-      document.getElementById('pill-arch').textContent = sys.hardware_mode_label;
-
-      document.getElementById('stat-total-scans').textContent = sum.total_scans;
-      document.getElementById('stat-threats').textContent = sum.threat_detections;
-      document.getElementById('stat-threats-breakdown').textContent = `${sum.malicious_detections} Malicious / ${sum.suspicious_detections} Suspicious`;
-      document.getElementById('stat-benign').textContent = sum.benign_detections;
-      document.getElementById('stat-pte-status').textContent = sys.models_status.llama_executorch.pte_verified ? 'VERIFIED (.pte)' : 'ERROR';
-      document.getElementById('stat-pte-sub').textContent = sys.models_status.llama_executorch.runtime_backend;
-
-      // Render Risk Bars
-      const total = Math.max(sum.total_scans, 1);
-      const rLevels = [['critical', '#dc2626'], ['high', '#ef4444'], ['medium', '#f59e0b'], ['low', '#10b981']];
-      document.getElementById('risk-bars-container').innerHTML = rLevels.map(([lvl, col]) => {
-        const cnt = sum.by_risk_level[lvl] || 0;
-        const pct = Math.round((cnt / total) * 100);
-        return `<div class="bar-row"><div class="bar-label"><span>${lvl.toUpperCase()}</span><span>${cnt} (${pct}%)</span></div><div class="bar-track"><div class="bar-fill" style="width:${pct}%; background:${col};"></div></div></div>`;
-      }).join('');
-
-      const sTypes = [['url', 'URL Phishing Scanner'], ['sms', 'SMS Scam Detector'], ['network', 'Network Flow Monitor']];
-      document.getElementById('source-bars-container').innerHTML = sTypes.map(([k, label]) => {
-        const cnt = sum.by_source[k] || 0;
-        const pct = Math.round((cnt / total) * 100);
-        return `<div class="bar-row"><div class="bar-label"><span>${label}</span><span>${cnt} (${pct}%)</span></div><div class="bar-track"><div class="bar-fill" style="width:${pct}%;"></div></div></div>`;
-      }).join('');
-
-      if (sum.latest_scan) {
-        const ls = sum.latest_scan;
-        document.getElementById('latest-scan-container').innerHTML = `
-          <p><strong>[${ls.source.toUpperCase()}] ${ls.raw_input_summary}</strong> — Classification: <strong>${ls.classification.toUpperCase()}</strong> (Risk Score: ${ls.risk_score}/100, Confidence: ${(ls.confidence*100).toFixed(1)}%)</p>
-          <p style="margin-top:6px; color:var(--text-secondary);"><strong>Llama Explanation:</strong> ${ls.explanation}</p>
-          <p style="margin-top:4px; color:var(--accent-blue);"><strong>Recommendation:</strong> ${ls.recommendation}</p>
-        `;
-      }
-
-      // System Info Tab
-      document.getElementById('sys-info-container').innerHTML = `
-        <div class="grid-2">
-          <div class="card">
-            <div class="card-title">Host &amp; Target Hardware Profile</div>
-            <table>
-              <tr><th>Operating System</th><td>${sys.os}</td></tr>
-              <tr><th>CPU Architecture</th><td>${sys.architecture} (ARM Native: ${sys.is_arm_hardware})</td></tr>
-              <tr><th>Hardware Mode</th><td>${sys.hardware_mode_label}</td></tr>
-              <tr><th>CPU Model</th><td>${sys.cpu_model} (${sys.physical_cores}C / ${sys.logical_cores}T)</td></tr>
-              <tr><th>System RAM</th><td>${sys.ram_used_gb} GB / ${sys.ram_total_gb} GB (${sys.ram_percent}%)</td></tr>
-              <tr><th>SecureEdge Process RSS</th><td>${sys.process_rss_mb} MB</td></tr>
-              <tr><th>Connectivity State</th><td>${sys.connectivity_mode}</td></tr>
-            </table>
-          </div>
-          <div class="card">
-            <div class="card-title">On-Device AI Models &amp; ExecuTorch Status</div>
-            <table>
-              <tr><th>URL Phishing Model</th><td>${sys.models_status.url_detector.version} (${sys.models_status.url_detector.artifact})</td></tr>
-              <tr><th>SMS Scam Model</th><td>${sys.models_status.sms_detector.version} (${sys.models_status.sms_detector.artifact})</td></tr>
-              <tr><th>Network Anomaly Model</th><td>${sys.models_status.network_detector.version} (${sys.models_status.network_detector.artifact})</td></tr>
-              <tr><th>Llama ExecuTorch Artifact</th><td>${sys.models_status.llama_executorch.artifact} (${sys.models_status.llama_executorch.pte_size_mb} MB)</td></tr>
-              <tr><th>ExecuTorch Runtime</th><td>${sys.models_status.llama_executorch.runtime_backend}</td></tr>
-              <tr><th>.pte Container Format</th><td>${sys.models_status.llama_executorch.pte_format}</td></tr>
-            </table>
-          </div>
-        </div>
+      const ms = s.models_status || {};
+      document.getElementById("system-body").innerHTML = `
+        <p><strong>Host:</strong> ${esc(s.os)} | <strong>CPU:</strong> ${esc(s.cpu_model)} (${esc(s.physical_cores)}C/${esc(s.logical_cores)}T)</p>
+        <p><strong>Memory:</strong> ${esc(s.ram_used_gb)} / ${esc(s.ram_total_gb)} GB (${esc(s.ram_percent)}%) | <strong>Process RSS:</strong> ${esc(s.process_rss_mb)} MB</p>
+        <table>
+          <thead><tr><th>Component</th><th>Loaded</th><th>Version / Backend</th><th>Artifact</th></tr></thead>
+          <tbody>
+            <tr><td>URL Detector</td><td>${esc(ms.url_detector?.loaded)}</td><td>${esc(ms.url_detector?.version)}</td><td>${esc(ms.url_detector?.artifact)}</td></tr>
+            <tr><td>SMS Detector</td><td>${esc(ms.sms_detector?.loaded)}</td><td>${esc(ms.sms_detector?.version)}</td><td>${esc(ms.sms_detector?.artifact)}</td></tr>
+            <tr><td>Network Detector</td><td>${esc(ms.network_detector?.loaded)}</td><td>${esc(ms.network_detector?.version)}</td><td>${esc(ms.network_detector?.artifact)}</td></tr>
+            <tr><td>Comparison LLM</td><td>${esc(ms.llama_executorch?.loaded)}</td><td>${esc(ms.llama_executorch?.runtime_backend)}</td><td>${esc(ms.llama_executorch?.artifact)}</td></tr>
+          </tbody>
+        </table>
+        <p class="muted" style="margin-top:10px;">${esc(ms.llama_executorch?.comparison_model_note)}</p>
       `;
     }
 
-    function setURLPreset(val) { document.getElementById('url-input').value = val; scanURL(); }
-    async function scanURL() {
-      const url = document.getElementById('url-input').value;
-      document.getElementById('url-result-area').innerHTML = '<div class="card">Running local URL lexical extraction, calibrated RF inference &amp; ExecuTorch Llama explanation...</div>';
-      const res = await fetch('/api/scan/url', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({url, explain:true})});
-      const rep = await res.json();
-      document.getElementById('url-result-area').innerHTML = renderReportCard(rep);
-      loadStatus();
-    }
-
-    function setSMSPreset(val) { document.getElementById('sms-input').value = val; scanSMS(); }
-    async function scanSMS() {
-      const sms_text = document.getElementById('sms-input').value;
-      document.getElementById('sms-result-area').innerHTML = '<div class="card">Running local SMS TF-IDF + structural fraud analysis &amp; ExecuTorch Llama explanation...</div>';
-      const res = await fetch('/api/scan/sms', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({sms_text, explain:true})});
-      const rep = await res.json();
-      document.getElementById('sms-result-area').innerHTML = renderReportCard(rep);
-      loadStatus();
-    }
-
-    async function scanNetwork(mode) {
-      document.getElementById('network-result-area').innerHTML = '<div class="card">Analyzing network packet flows via Scapy &amp; Network Anomaly Detector...</div>';
-      const res = await fetch('/api/scan/network', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({mode})});
-      const data = await res.json();
-      document.getElementById('net-mode-banner').innerHTML = `<strong>Active Capture Mode:</strong> ${data.capture_status}`;
-      if (data.status !== 'ok') {
-        document.getElementById('network-result-area').innerHTML = `<div class="card" style="border-color:#f59e0b;"><strong>Notice:</strong> ${data.message}</div>`;
-        return;
-      }
-      document.getElementById('network-result-area').innerHTML = (data.reports || []).map(r => renderReportCard(r)).join('');
-      loadStatus();
-    }
-
-    async function scanCustomSYNFlood() {
-      const flow = {src_ip:"10.0.99.201", dst_ip:"192.168.1.10", dst_port:80, protocol_id:6, flow_duration_sec:0.18, packet_count:220, byte_count:11880, packets_per_sec:1222.2, bytes_per_sec:66000, syn_flag_ratio:0.95, rst_flag_ratio:0.02, ack_flag_ratio:0.03, fin_flag_ratio:0.0, unique_dst_ports_window:2, connection_frequency:95, payload_byte_ratio:0.0};
-      const res = await fetch('/api/scan/network', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({mode:'custom_flow', flow})});
-      const data = await res.json();
-      document.getElementById('net-mode-banner').innerHTML = `<strong>Active Capture Mode:</strong> Custom Flow Inspection (Replay/Test Mode)`;
-      document.getElementById('network-result-area').innerHTML = (data.reports || []).map(r => renderReportCard(r)).join('');
-      loadStatus();
-    }
-
-    async function runLlamaAdvisor() {
-      const threat_type = document.getElementById('llama-threat-type').value;
-      const risk_level = document.getElementById('llama-risk-level').value;
-      const confidence = parseFloat(document.getElementById('llama-confidence').value || '0.94');
-      const evidence = document.getElementById('llama-evidence').value.split('\n').map(s => s.trim()).filter(Boolean);
-      document.getElementById('llama-direct-output').innerHTML = 'Running static ATen/ExecuTorch graph token generation...';
-      const res = await fetch('/api/explain', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({threat_type, risk_level, confidence, evidence})});
-      const data = await res.json();
-      if (data.status !== 'ok') {
-        document.getElementById('llama-direct-output').innerHTML = `<p style="color:#f87171;">Error: ${data.message}</p>`;
-        return;
-      }
-      document.getElementById('llama-direct-output').innerHTML = `
-        <p style="margin-bottom:8px;"><strong>Input JSON Passed to Llama:</strong></p>
-        <pre>${JSON.stringify(data.structured_input, null, 2)}</pre>
-        <p style="margin:12px 0 8px;"><strong>Validated Output JSON Returned by Llama (.pte):</strong></p>
-        <pre>${JSON.stringify(data.structured_output, null, 2)}</pre>
-        <p style="margin-top:10px; font-size:0.82rem; color:var(--text-secondary);">
-          Backend: ${data.full_telemetry.runtime_backend} | Latency: ${data.full_telemetry.generation_latency_ms} ms | Graph Nodes: ${data.export_metadata.graph_node_count || 324}
-        </p>
-      `;
-    }
-
-    async function loadHistory() {
-      const res = await fetch('/api/history');
-      const data = await res.json();
-      const rows = (data.history || []).map(r => `
-        <tr>
-          <td>${escapeHtml((r.timestamp || '').slice(0,19).replace('T',' '))}</td>
-          <td>${escapeHtml((r.source || '').toUpperCase())}</td>
-          <td>${escapeHtml(r.raw_input_summary)}</td>
-          <td><strong style="color:${r.classification==='malicious'?'#f87171':(r.classification==='suspicious'?'#fbbf24':'#34d399')}">${escapeHtml((r.classification || '').toUpperCase())}</strong> (${escapeHtml(r.threat_type)})</td>
-          <td>${Number(r.risk_score)}/100</td>
-          <td>${(r.confidence*100).toFixed(1)}%</td>
-          <td>${Number(r.total_latency_ms)} ms</td>
-          <td>${escapeHtml(r.execution_mode)}</td>
-        </tr>
-      `).join('');
-      document.getElementById('history-table-body').innerHTML = rows || '<tr><td colspan="8">No detection history recorded yet.</td></tr>';
-    }
-
-    async function clearHistory() {
-      await fetch('/api/history', {method:'DELETE'});
-      loadHistory();
-      loadStatus();
-    }
-
-    async function loadBenchmarks() {
-      const res = await fetch('/api/benchmarks');
-      const data = await res.json();
-      const eb = data.edge_benchmarks.component_benchmarks || {};
-      const tm = data.training_metrics || {};
-
-      document.getElementById('benchmarks-container').innerHTML = `
-        <div class="card">
-          <div class="card-title">On-Device Component Latency, Throughput &amp; Footprint (${data.edge_benchmarks.measured_hardware_environment?.measurement_category || 'Host'})</div>
-          <table>
-            <thead>
-              <tr><th>Pipeline Component</th><th>Selected Model / Backend</th><th>Mean Latency (ms)</th><th>P95 Latency (ms)</th><th>Artifact Size (KB)</th></tr>
-            </thead>
-            <tbody>
-              <tr><td>1. URL Phishing Detector</td><td>${tm.url_detection?.selected_model}</td><td>${eb.url_detector?.mean_latency_ms} ms</td><td>${eb.url_detector?.p95_latency_ms} ms</td><td>${eb.url_detector?.model_size_kb} KB</td></tr>
-              <tr><td>2. SMS Scam Detector</td><td>${tm.sms_detection?.selected_model}</td><td>${eb.sms_detector?.mean_latency_ms} ms</td><td>${eb.sms_detector?.p95_latency_ms} ms</td><td>${eb.sms_detector?.model_size_kb} KB</td></tr>
-              <tr><td>3. Network Anomaly Detector</td><td>${tm.network_detection?.selected_model} + IsolationForest</td><td>${eb.network_detector?.mean_latency_ms} ms</td><td>${eb.network_detector?.p95_latency_ms} ms</td><td>${eb.network_detector?.model_size_kb} KB</td></tr>
-              <tr><td>4. Llama + ExecuTorch Advisor</td><td>${escapeHtml(eb.llama_executorch?.runtime_backend)}</td><td>${eb.llama_executorch?.mean_latency_ms} ms</td><td>${eb.llama_executorch?.p95_latency_ms} ms</td><td>${eb.llama_executorch?.model_size_kb} KB (${(Number(eb.llama_executorch?.model_size_kb || 0)/1024).toFixed(2)} MB)</td></tr>
-              <tr><td><strong>Complete E2E Pipeline</strong></td><td>Detector + Threat Engine + Llama (.pte)</td><td><strong>${eb.end_to_end_pipeline?.mean_latency_ms} ms</strong></td><td><strong>${eb.end_to_end_pipeline?.p95_latency_ms} ms</strong></td><td><strong>${data.edge_benchmarks.arm_edge_deployment_readiness?.total_models_footprint_mb || 'N/A'} MB Total</strong></td></tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="grid-2">
-          <div class="card">
-            <div class="card-title">Unseen Test-Set Confusion Matrices</div>
-            <img class="figure-img" src="/api/figures/confusion_matrices.png" alt="Confusion Matrices" />
-          </div>
-          <div class="card">
-            <div class="card-title">URL Model Architecture Comparison</div>
-            <img class="figure-img" src="/api/figures/model_comparison_f1_auc.png" alt="Model Comparison" />
-          </div>
-        </div>
-        <div class="grid-2">
-          <div class="card">
-            <div class="card-title">On-Device Latency Breakdown</div>
-            <img class="figure-img" src="/api/figures/pipeline_latency_breakdown.png" alt="Latency Breakdown" />
-          </div>
-          <div class="card">
-            <div class="card-title">Edge Model Storage Footprint</div>
-            <img class="figure-img" src="/api/figures/model_footprint_comparison.png" alt="Model Footprint" />
-          </div>
-        </div>
-      `;
-    }
-
-    window.addEventListener('DOMContentLoaded', () => { loadStatus(); });
+    loadStatus();
   </script>
 </body>
 </html>
