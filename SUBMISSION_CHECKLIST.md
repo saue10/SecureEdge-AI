@@ -7,36 +7,29 @@
 
 ## Automated Engineering & Repository Deliverables (Completed)
 
-- [x] **Complete Source Code (`src/`, `app/`, `scripts/`, `deployment/`):** Modular, tested, lint-clean Python codebase.
-- [x] **Working Application:**
-  - Local Dark Cybersecurity Dashboard (`python scripts/run_application.py --host 127.0.0.1 --port 8501`)
-  - Offline CLI Demonstration (`python scripts/run_application.py --cli-demo`) — verified exit code `0`
-  - Streamlit Alternative UI (`app/streamlit_app.py`)
+- [x] **Complete Source Code (`src/`, `app/`, `scripts/`, `deployment/`):** Modular, tested Python codebase across Phases 1–5.
+- [x] **Unified Primary Application (Flask):**
+  - 10-view Cybersecurity Dashboard (`python scripts/run_application.py --host 127.0.0.1 --port 8501`)
+  - Default offline `FAST TRIAGE` mode (`~189 MB` RSS, zero LLM startup overhead) + optional `DEEP ANALYSIS` with deterministic fallback
+  - Controlled offline synthetic demonstration mode (10 scenarios) & redacted JSON/Markdown incident export
+- [x] **Hardened Detectors & Calibrated Policy (Phase 3):**
+  - `HardenedURLDetector` (`0.342 MB`), `HardenedSMSDetector` (`0.169 MB`), `ContextAwareNetworkDetector` (`2.216 MB`)
+  - `CalibratedDecisionPolicy` (`confirmed_malicious`, `suspicious_unknown`, `normal`, `insufficient_evidence`)
 - [x] **Lightweight Comparison LLM (`SmolLM2-135M-Instruct`) Preserved:**
-  - `HuggingFaceTB/SmolLM2-135M-Instruct` (`LlamaForCausalLM`, 134.5M params, Apache-2.0) exported via `python scripts/export_llama_executorch.py` (`smollm2_135m_cyber_advisor.pte`, `520.94 MB`, `2,457` nodes; preserved as lightweight comparison model, not claimed as Meta Llama)
-  - Offline tokenizer committed in `models/llama_executorch/tokenizer/`
-  - `.pte`/`.pt2` (>100 MB) excluded in `.gitignore` for GitHub compliance
-- [ ] **Authentic Meta Llama 3.2 1B + Native ExecuTorch (`8da4w` XNNPACK):**
-  - **Blocked on Windows 11 host** (`meta-llama/Llama-3.2-1B-Instruct` requires `HF_TOKEN`; `executorch` wheels require `torch>=2.10` which fails `c10.dll` init on this host). See `docs/LLAMA_EXECUTORCH_COMPLIANCE_AUDIT.md` and run `deployment/raspberry_pi/setup_rpi5.sh` on Linux/ARM64 with `HF_TOKEN` set.
-- [x] **Specialized Detectors & Datasets:**
-  - `url_detector_pipeline.joblib` (`262.4 KB`), `sms_detector_pipeline.joblib` (`64.2 KB`), `network_detector_pipeline.joblib` (`542.3 KB`)
-  - Reproducible datasets (`data/raw/`) + Scapy PCAP (`data/processed/sample_network_traffic.pcap`)
+  - `HuggingFaceTB/SmolLM2-135M-Instruct` (`LlamaForCausalLM`, 134.5M params, Apache-2.0) exported via `python scripts/export_llama_executorch.py` (`.pte`/`.pt2` excluded in `.gitignore`; offline tokenizer in `models/llama_executorch/tokenizer/`)
+- [ ] **Authentic Meta Llama 3.2 1B + Native ExecuTorch (`8da4w` XNNPACK) & Physical ARM64:**
+  - **Not verified on this Windows 11 x86_64 host** (`HF_TOKEN` + Linux/ARM64 `executorch` required). See `docs/PHASE5_FINAL_INTEGRATION_AUDIT.md` and `deployment/linux/export_meta_llama_executorch.sh`.
 - [x] **Automated QA & Benchmarks:**
-  - `python -m unittest discover -s tests -p "test_*.py" -v` → `16/16` PASS (`317.241s`)
-  - `evaluation/metrics/training_and_evaluation_metrics.json`, `evaluation/benchmark_results/edge_performance_benchmarks.json`, `evaluation/figures/*.png`
-- [x] **Technical Report & Documentation:**
-  - `README.md`, `docs/FINAL_REPORT.md` (23 sections), `docs/MODEL_DOCUMENTATION.md`, `docs/TEST_REPORT.md`, `docs/FINAL_COMPETITION_READINESS_AUDIT.md`, `docs/FINAL_EXECUTION_REPORT.md`
-- [x] **Demonstration Script & Visuals:** `demo/demo_script.md` and `demo/screenshots/*.png`
+  - Full suite: `python -m unittest discover -s tests -p "test_*.py" -v` (Phase 1–5 unit, integration, security, and E2E tests)
+  - Evaluation results: `results/phase3_hardening/phase3_results.json`, `results/adaptive_threat_intelligence/phase2_results.json`, `results/reliable_evaluation/reliable_evaluation_results.json`
+- [x] **Documentation & Demo Script:**
+  - `README.md`, `docs/PHASE5_FINAL_INTEGRATION_AUDIT.md`, `docs/PHASE4_PRODUCTIZATION_REPORT.md`, `docs/PHASE3_EVALUATION_REPORT.md`, `docs/DEMO_SCRIPT.md`, `docs/DEMO_SCENARIOS.md`
 
 ---
 
 ## Manual External Actions Required Before 23 November 2026
 
-- [ ] **1. Push to GitHub:** Create a public/team GitHub repository and push `main`:
-  ```bash
-  git remote add origin https://github.com/<your-org-or-user>/SecureEdge-AI.git
-  git push -u origin main
-  ```
-- [ ] **2. Record 4–6 Minute Demonstration Video:** Follow `demo/demo_script.md` to record screen capture of the dashboard (`http://127.0.0.1:8501`), `--cli-demo`, and code/architecture walkthrough.
-- [ ] **3. (Optional, if ARM64 Board Available) Run On-Board Verification:** On Raspberry Pi 5 / ARM64 Linux, run `./deployment/raspberry_pi/setup_rpi5.sh` and `python deployment/arm64/verify_arm64_executorch.py` to append physical ARM64 telemetry.
-- [ ] **4. Submit Official Challenge Form:** Upload the GitHub URL, Technical Report (`docs/FINAL_REPORT.md`), and Demonstration Video link through the official Bharat AI-SoC Challenge Phase 1 Submission Form on or before **23 November 2026**.
+- [ ] **1. Push to GitHub:** `git push -u origin main`
+- [ ] **2. Record 5-Minute Demonstration Video:** Follow `docs/DEMO_SCRIPT.md` on `http://127.0.0.1:8501`.
+- [ ] **3. (Optional, if Linux/ARM64 Available) Export & Verify Meta Llama 3.2 1B:** Run `deployment/linux/export_meta_llama_executorch.sh` with `HF_TOKEN`.
+- [ ] **4. Submit Official Challenge Form:** Submit GitHub URL, Technical Report, and Demo Video on or before **23 November 2026**.

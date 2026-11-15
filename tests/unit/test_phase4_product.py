@@ -197,6 +197,51 @@ class TestPhase4Productization(unittest.TestCase):
         self.assertEqual(r_exp.status_code, 200)
         self.assertIn("attachment;", r_exp.headers.get("Content-Disposition", ""))
 
+    def test_08_security_path_traversal_and_e2e_workflow(self) -> None:
+        # Path traversal blocked
+        r_trav = self.client.get("/api/figures/..%2F..%2FREADME.md")
+        self.assertEqual(r_trav.status_code, 404)
+
+        # Status endpoint works without forcing eager LLM load
+        r_st = self.client.get("/api/status")
+        self.assertEqual(r_st.status_code, 200)
+
+        # E2E multi-stage correlation through Flask API + redacted JSON export
+        r_sms = self.client.post(
+            "/api/v2/analyze/sms",
+            json={"sms_text": "URGENT KYC http://sbi-kyc-e2e77.xyz/verify call +91 9811223344"},
+        )
+        self.assertEqual(r_sms.status_code, 200)
+        inc_id = r_sms.get_json()["incident"]["incident_id"]
+
+        r_net = self.client.post(
+            "/api/v2/analyze/network",
+            json={
+                "flow": {
+                    "src_ip": "192.168.1.44",
+                    "dst_ip": "45.77.12.88",
+                    "dst_domain": "sbi-kyc-e2e77.xyz",
+                    "flow_duration_sec": 4.5,
+                    "packet_count": 650,
+                    "byte_count": 845000,
+                    "syn_flag_ratio": 0.01,
+                    "ack_flag_ratio": 0.99,
+                    "rst_flag_ratio": 0.0,
+                    "unique_dst_ports_window": 1,
+                    "connection_frequency": 3,
+                    "payload_byte_ratio": 0.95,
+                }
+            },
+        )
+        self.assertEqual(r_net.status_code, 200)
+        self.assertEqual(r_net.get_json()["incident"]["incident_id"], inc_id)
+
+        r_json = self.client.get(f"/api/v2/incidents/{inc_id}/export?format=json&redact=true")
+        self.assertEqual(r_json.status_code, 200)
+        exported = json.loads(r_json.get_data(as_text=True))
+        self.assertNotIn("9811223344", json.dumps(exported))
+        self.assertGreaterEqual(len(exported["observations"]), 2)
+
 
 if __name__ == "__main__":
     unittest.main()

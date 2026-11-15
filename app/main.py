@@ -97,7 +97,7 @@ calibrated_engine = CalibratedThreatEngine(
     url_detector=HardenedURLDetector(PROJECT_ROOT / "models" / "url" / "url_hardened_pipeline.joblib"),
     sms_detector=HardenedSMSDetector(PROJECT_ROOT / "models" / "sms" / "sms_hardened_pipeline.joblib"),
     network_detector=_load_context_network_detector(),
-    llama_advisor=engine.llama_advisor,
+    llama_advisor=None,
 )
 incident_engine = IncidentCorrelationEngine()
 
@@ -142,7 +142,23 @@ def get_system_telemetry() -> Dict[str, Any]:
     vm = psutil.virtual_memory()
     proc = psutil.Process()
     cpu_brand = cpuinfo.get_cpu_info().get("brand_raw", platform.processor())
-    pte_status = engine.llama_advisor.runtime.verify_pte_artifact()
+    active_advisor = calibrated_engine._llama_advisor or engine._llama_advisor
+    if active_advisor is not None:
+        pte_status = active_advisor.runtime.verify_pte_artifact()
+        llama_loaded = active_advisor.runtime.is_loaded
+        llama_backend = active_advisor.runtime.runtime_backend
+        llama_artifact = str(active_advisor.runtime.pte_path.name)
+    else:
+        pte_file = PROJECT_ROOT / "models" / "llama_executorch" / "smollm2_135m_cyber_advisor.pte"
+        pte_exists = pte_file.exists()
+        pte_status = {
+            "verified": pte_exists,
+            "size_mb": round(pte_file.stat().st_size / (1024 * 1024), 3) if pte_exists else 0.0,
+            "format": "ExecuTorch-PTE (Lazy-Ready)" if pte_exists else "Missing",
+        }
+        llama_loaded = False
+        llama_backend = "Lazy-Ready (Zero RAM until DEEP ANALYSIS)"
+        llama_artifact = pte_file.name
 
     return {
         "project_name": "SECUREEDGE AI",
@@ -187,13 +203,13 @@ def get_system_telemetry() -> Dict[str, Any]:
                 "artifact": "network_context_aware.joblib",
             },
             "llama_executorch": {
-                "loaded": engine.llama_advisor.runtime.is_loaded,
-                "runtime_backend": engine.llama_advisor.runtime.runtime_backend,
+                "loaded": llama_loaded,
+                "runtime_backend": llama_backend,
                 "comparison_model_note": "SmolLM2-135M-Instruct comparison static graph (Meta Llama 3.2 ExecuTorch .pte not executed on Windows)",
                 "pte_verified": pte_status.get("verified", False),
                 "pte_size_mb": pte_status.get("size_mb", 0.0),
                 "pte_format": pte_status.get("format", "Unknown"),
-                "artifact": str(engine.llama_advisor.runtime.pte_path.name),
+                "artifact": llama_artifact,
             },
         },
     }
