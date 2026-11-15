@@ -1,0 +1,634 @@
+{
+  "sms": {
+    "clean_split_sizes": {
+      "train": 566,
+      "val_cal": 122,
+      "clean_test": 122
+    },
+    "adversarial_dataset_size": {
+      "attacks": 220,
+      "benign_hard_negatives": 220
+    },
+    "baseline_scam_sms": {
+      "clean": {
+        "count": 122,
+        "accuracy": 0.959,
+        "precision": 1.0,
+        "recall": 0.9359,
+        "macro_f1": 0.9566,
+        "fpr": 0.0,
+        "fnr": 0.0641,
+        "confusion_matrix": {
+          "tn": 44,
+          "fp": 0,
+          "fn": 5,
+          "tp": 73
+        },
+        "p50_latency_ms": 2.154,
+        "p95_latency_ms": 3.441
+      },
+      "adversarial": {
+        "count": 440,
+        "accuracy": 0.6977,
+        "precision": 0.9065,
+        "recall": 0.4409,
+        "macro_f1": 0.6764,
+        "fpr": 0.0455,
+        "fnr": 0.5591,
+        "confusion_matrix": {
+          "tn": 210,
+          "fp": 10,
+          "fn": 123,
+          "tp": 97
+        },
+        "p50_latency_ms": 1.981,
+        "p95_latency_ms": 2.919
+      }
+    },
+    "hardened_sms": {
+      "clean": {
+        "count": 122,
+        "accuracy": 0.959,
+        "precision": 0.9398,
+        "recall": 1.0,
+        "macro_f1": 0.9544,
+        "fpr": 0.1136,
+        "fnr": 0.0,
+        "confusion_matrix": {
+          "tn": 39,
+          "fp": 5,
+          "fn": 0,
+          "tp": 78
+        },
+        "p50_latency_ms": 2.052,
+        "p95_latency_ms": 2.641
+      },
+      "adversarial": {
+        "count": 440,
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "macro_f1": 1.0,
+        "fpr": 0.0,
+        "fnr": 0.0,
+        "confusion_matrix": {
+          "tn": 220,
+          "fp": 0,
+          "fn": 0,
+          "tp": 220
+        },
+        "p50_latency_ms": 1.808,
+        "p95_latency_ms": 2.744
+      },
+      "benign_fp_by_category": {
+        "benign_banking_alert": {
+          "total": 55,
+          "false_positives": 0,
+          "fpr": 0.0
+        },
+        "benign_commercial": {
+          "total": 55,
+          "false_positives": 0,
+          "fpr": 0.0
+        },
+        "benign_otp": {
+          "total": 55,
+          "false_positives": 0,
+          "fpr": 0.0
+        },
+        "benign_personal": {
+          "total": 55,
+          "false_positives": 0,
+          "fpr": 0.0
+        }
+      },
+      "model_size_mb": 0.169
+    },
+    "ablation_models": {
+      "raw_text_LogisticRegression": {
+        "clean": {
+          "count": 122,
+          "accuracy": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "macro_f1": 1.0,
+          "fpr": 0.0,
+          "fnr": 0.0,
+          "confusion_matrix": {
+            "tn": 44,
+            "fp": 0,
+            "fn": 0,
+            "tp": 78
+          },
+          "p50_latency_ms": 0.0,
+          "p95_latency_ms": 0.0
+        },
+        "adversarial": {
+          "count": 440,
+          "accuracy": 0.8614,
+          "precision": 0.8732,
+          "recall": 0.8455,
+          "macro_f1": 0.8613,
+          "fpr": 0.1227,
+          "fnr": 0.1545,
+          "confusion_matrix": {
+            "tn": 193,
+            "fp": 27,
+            "fn": 34,
+            "tp": 186
+          },
+          "p50_latency_ms": 0.0,
+          "p95_latency_ms": 0.0
+        }
+      },
+      "raw_text_LinearSVC": {
+        "clean": {
+          "count": 122,
+          "accuracy": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "macro_f1": 1.0,
+          "fpr": 0.0,
+          "fnr": 0.0,
+          "confusion_matrix": {
+            "tn": 44,
+            "fp": 0,
+            "fn": 0,
+            "tp": 78
+          },
+          "p50_latency_ms": 0.0,
+          "p95_latency_ms": 0.0
+        },
+        "adversarial": {
+          "count": 440,
+          "accuracy": 0.8045,
+          "precision": 0.8895,
+          "recall": 0.6955,
+          "macro_f1": 0.8022,
+          "fpr": 0.0864,
+          "fnr": 0.3045,
+          "confusion_matrix": {
+            "tn": 201,
+            "fp": 19,
+            "fn": 67,
+            "tp": 153
+          },
+          "p50_latency_ms": 0.0,
+          "p95_latency_ms": 0.0
+        }
+      },
+      "normalized_text_LogisticRegression": {
+        "clean": {
+          "count": 122,
+          "accuracy": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "macro_f1": 1.0,
+          "fpr": 0.0,
+          "fnr": 0.0,
+          "confusion_matrix": {
+            "tn": 44,
+            "fp": 0,
+            "fn": 0,
+            "tp": 78
+          },
+          "p50_latency_ms": 0.0,
+          "p95_latency_ms": 0.0
+        },
+        "adversarial": {
+          "count": 440,
+          "accuracy": 0.8864,
+          "precision": 0.9208,
+          "recall": 0.8455,
+          "macro_f1": 0.8862,
+          "fpr": 0.0727,
+          "fnr": 0.1545,
+          "confusion_matrix": {
+            "tn": 204,
+            "fp": 16,
+            "fn": 34,
+            "tp": 186
+          },
+          "p50_latency_ms": 0.0,
+          "p95_latency_ms": 0.0
+        }
+      },
+      "normalized_text_LinearSVC": {
+        "clean": {
+          "count": 122,
+          "accuracy": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "macro_f1": 1.0,
+          "fpr": 0.0,
+          "fnr": 0.0,
+          "confusion_matrix": {
+            "tn": 44,
+            "fp": 0,
+            "fn": 0,
+            "tp": 78
+          },
+          "p50_latency_ms": 0.0,
+          "p95_latency_ms": 0.0
+        },
+        "adversarial": {
+          "count": 440,
+          "accuracy": 0.8636,
+          "precision": 0.881,
+          "recall": 0.8409,
+          "macro_f1": 0.8636,
+          "fpr": 0.1136,
+          "fnr": 0.1591,
+          "confusion_matrix": {
+            "tn": 195,
+            "fp": 25,
+            "fn": 35,
+            "tp": 185
+          },
+          "p50_latency_ms": 0.0,
+          "p95_latency_ms": 0.0
+        }
+      }
+    }
+  },
+  "url": {
+    "clean_split_sizes": {
+      "train": 1127,
+      "val_cal": 246,
+      "clean_test": 227
+    },
+    "adversarial_dataset_size": {
+      "attacks": 230,
+      "benign_hard_negatives": 220
+    },
+    "baseline_url": {
+      "clean": {
+        "count": 227,
+        "accuracy": 0.9427,
+        "precision": 0.9044,
+        "recall": 1.0,
+        "macro_f1": 0.9416,
+        "fpr": 0.125,
+        "fnr": 0.0,
+        "confusion_matrix": {
+          "tn": 91,
+          "fp": 13,
+          "fn": 0,
+          "tp": 123
+        },
+        "p50_latency_ms": 18.786,
+        "p95_latency_ms": 22.167
+      },
+      "adversarial": {
+        "count": 450,
+        "accuracy": 0.6778,
+        "precision": 0.7179,
+        "recall": 0.6087,
+        "macro_f1": 0.6768,
+        "fpr": 0.25,
+        "fnr": 0.3913,
+        "confusion_matrix": {
+          "tn": 165,
+          "fp": 55,
+          "fn": 90,
+          "tp": 140
+        },
+        "p50_latency_ms": 28.788,
+        "p95_latency_ms": 55.993
+      }
+    },
+    "hardened_url": {
+      "clean": {
+        "count": 227,
+        "accuracy": 0.9868,
+        "precision": 0.9762,
+        "recall": 1.0,
+        "macro_f1": 0.9867,
+        "fpr": 0.0288,
+        "fnr": 0.0,
+        "confusion_matrix": {
+          "tn": 101,
+          "fp": 3,
+          "fn": 0,
+          "tp": 123
+        },
+        "p50_latency_ms": 2.755,
+        "p95_latency_ms": 3.977
+      },
+      "adversarial": {
+        "count": 450,
+        "accuracy": 0.8467,
+        "precision": 0.797,
+        "recall": 0.9391,
+        "macro_f1": 0.8447,
+        "fpr": 0.25,
+        "fnr": 0.0609,
+        "confusion_matrix": {
+          "tn": 165,
+          "fp": 55,
+          "fn": 14,
+          "tp": 216
+        },
+        "p50_latency_ms": 3.836,
+        "p95_latency_ms": 5.888
+      },
+      "benign_fp_by_category": {
+        "benign_idn": {
+          "total": 55,
+          "flagged_suspicious_or_malicious": 0,
+          "fpr": 0.0
+        },
+        "benign_official_brand": {
+          "total": 55,
+          "flagged_suspicious_or_malicious": 0,
+          "fpr": 0.0
+        },
+        "benign_research_blog": {
+          "total": 55,
+          "flagged_suspicious_or_malicious": 0,
+          "fpr": 0.0
+        },
+        "benign_shortener": {
+          "total": 55,
+          "flagged_suspicious_or_malicious": 55,
+          "fpr": 1.0
+        }
+      },
+      "model_size_mb": 0.342
+    }
+  },
+  "network": {
+    "phase2_adaptive_baseline": {
+      "known": {
+        "strict_confirmed": {
+          "count": 200,
+          "accuracy": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "macro_f1": 1.0,
+          "fpr": 0.0,
+          "fnr": 0.0,
+          "confusion_matrix": {
+            "tn": 100,
+            "fp": 0,
+            "fn": 0,
+            "tp": 100
+          },
+          "p50_latency_ms": 13.87,
+          "p95_latency_ms": 16.55
+        },
+        "alert_confirmed_or_suspicious": {
+          "count": 200,
+          "accuracy": 0.985,
+          "precision": 0.9709,
+          "recall": 1.0,
+          "macro_f1": 0.985,
+          "fpr": 0.03,
+          "fnr": 0.0,
+          "confusion_matrix": {
+            "tn": 97,
+            "fp": 3,
+            "fn": 0,
+            "tp": 100
+          },
+          "p50_latency_ms": 13.87,
+          "p95_latency_ms": 16.55
+        },
+        "abstention_count": 0
+      },
+      "unseen": {
+        "strict_confirmed": {
+          "count": 500,
+          "accuracy": 0.644,
+          "precision": 0.6324,
+          "recall": 0.688,
+          "macro_f1": 0.6433,
+          "fpr": 0.4,
+          "fnr": 0.312,
+          "confusion_matrix": {
+            "tn": 150,
+            "fp": 100,
+            "fn": 78,
+            "tp": 172
+          },
+          "p50_latency_ms": 14.515,
+          "p95_latency_ms": 18.691
+        },
+        "alert_confirmed_or_suspicious": {
+          "count": 500,
+          "accuracy": 0.57,
+          "precision": 0.5378,
+          "recall": 0.996,
+          "macro_f1": 0.4747,
+          "fpr": 0.856,
+          "fnr": 0.004,
+          "confusion_matrix": {
+            "tn": 36,
+            "fp": 214,
+            "fn": 1,
+            "tp": 249
+          },
+          "p50_latency_ms": 14.515,
+          "p95_latency_ms": 18.691
+        },
+        "abstention_count": 0
+      },
+      "adversarial": {
+        "strict_confirmed": {
+          "count": 440,
+          "accuracy": 0.6455,
+          "precision": 0.6495,
+          "recall": 0.6318,
+          "macro_f1": 0.6454,
+          "fpr": 0.3409,
+          "fnr": 0.3682,
+          "confusion_matrix": {
+            "tn": 145,
+            "fp": 75,
+            "fn": 81,
+            "tp": 139
+          },
+          "p50_latency_ms": 14.546,
+          "p95_latency_ms": 19.399
+        },
+        "alert_confirmed_or_suspicious": {
+          "count": 440,
+          "accuracy": 0.7477,
+          "precision": 0.6667,
+          "recall": 0.9909,
+          "macro_f1": 0.7319,
+          "fpr": 0.4955,
+          "fnr": 0.0091,
+          "confusion_matrix": {
+            "tn": 111,
+            "fp": 109,
+            "fn": 2,
+            "tp": 218
+          },
+          "p50_latency_ms": 14.546,
+          "p95_latency_ms": 19.399
+        },
+        "abstention_count": 0
+      }
+    },
+    "phase3_context_aware": {
+      "known": {
+        "strict_confirmed": {
+          "count": 200,
+          "accuracy": 0.82,
+          "precision": 1.0,
+          "recall": 0.64,
+          "macro_f1": 0.814,
+          "fpr": 0.0,
+          "fnr": 0.36,
+          "confusion_matrix": {
+            "tn": 100,
+            "fp": 0,
+            "fn": 36,
+            "tp": 64
+          },
+          "p50_latency_ms": 14.377,
+          "p95_latency_ms": 16.721
+        },
+        "alert_confirmed_or_suspicious": {
+          "count": 200,
+          "accuracy": 0.82,
+          "precision": 1.0,
+          "recall": 0.64,
+          "macro_f1": 0.814,
+          "fpr": 0.0,
+          "fnr": 0.36,
+          "confusion_matrix": {
+            "tn": 100,
+            "fp": 0,
+            "fn": 36,
+            "tp": 64
+          },
+          "p50_latency_ms": 14.377,
+          "p95_latency_ms": 16.721
+        },
+        "abstention_count": 25
+      },
+      "unseen": {
+        "strict_confirmed": {
+          "count": 500,
+          "accuracy": 0.812,
+          "precision": 1.0,
+          "recall": 0.624,
+          "macro_f1": 0.8051,
+          "fpr": 0.0,
+          "fnr": 0.376,
+          "confusion_matrix": {
+            "tn": 250,
+            "fp": 0,
+            "fn": 94,
+            "tp": 156
+          },
+          "p50_latency_ms": 14.362,
+          "p95_latency_ms": 16.592
+        },
+        "alert_confirmed_or_suspicious": {
+          "count": 500,
+          "accuracy": 0.948,
+          "precision": 0.9912,
+          "recall": 0.904,
+          "macro_f1": 0.9479,
+          "fpr": 0.008,
+          "fnr": 0.096,
+          "confusion_matrix": {
+            "tn": 248,
+            "fp": 2,
+            "fn": 24,
+            "tp": 226
+          },
+          "p50_latency_ms": 14.362,
+          "p95_latency_ms": 16.592
+        },
+        "abstention_count": 71
+      },
+      "unseen_per_scenario": {
+        "benign_microservice_burst": {
+          "confirmed_malicious": 0,
+          "suspicious_unknown": 2,
+          "normal": 56,
+          "insufficient_evidence": 67
+        },
+        "benign_ssh_session": {
+          "confirmed_malicious": 0,
+          "suspicious_unknown": 0,
+          "normal": 125,
+          "insufficient_evidence": 0
+        },
+        "data_exfiltration_anomaly": {
+          "confirmed_malicious": 95,
+          "suspicious_unknown": 16,
+          "normal": 14,
+          "insufficient_evidence": 0
+        },
+        "stealth_low_slow_probe": {
+          "confirmed_malicious": 61,
+          "suspicious_unknown": 54,
+          "normal": 6,
+          "insufficient_evidence": 4
+        }
+      },
+      "adversarial": {
+        "strict_confirmed": {
+          "count": 440,
+          "accuracy": 0.8159,
+          "precision": 1.0,
+          "recall": 0.6318,
+          "macro_f1": 0.8095,
+          "fpr": 0.0,
+          "fnr": 0.3682,
+          "confusion_matrix": {
+            "tn": 220,
+            "fp": 0,
+            "fn": 81,
+            "tp": 139
+          },
+          "p50_latency_ms": 14.572,
+          "p95_latency_ms": 16.407
+        },
+        "alert_confirmed_or_suspicious": {
+          "count": 440,
+          "accuracy": 0.9682,
+          "precision": 1.0,
+          "recall": 0.9364,
+          "macro_f1": 0.9681,
+          "fpr": 0.0,
+          "fnr": 0.0636,
+          "confusion_matrix": {
+            "tn": 220,
+            "fp": 0,
+            "fn": 14,
+            "tp": 206
+          },
+          "p50_latency_ms": 14.572,
+          "p95_latency_ms": 16.407
+        },
+        "abstention_count": 0
+      },
+      "model_size_mb": 2.216
+    }
+  },
+  "operating_modes_benchmark": {
+    "fast_triage": {
+      "runs": 45,
+      "p50_ms": 3.404,
+      "p95_ms": 15.845,
+      "wall_sec": 0.318,
+      "rss_mb": 69.76,
+      "cpu_percent": 372.8
+    },
+    "deep_analysis": {
+      "runs": 2,
+      "p50_ms": 14469.972,
+      "p95_ms": 24149.016,
+      "rss_mb": 585.55,
+      "backends": [
+        "torch.export.ExportedProgram (HuggingFaceTB/SmolLM2-135M-Instruct | amd64-Windows)"
+      ]
+    }
+  }
+}
