@@ -43,6 +43,8 @@ data/raw/large_archives/
 *.log
 logs/
 *.sqlite3
+data/processed/incidents_history.json
+data/processed/detection_history.json
 
 # OS / IDE files
 .DS_Store

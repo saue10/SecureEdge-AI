@@ -20,6 +20,7 @@ import platform
 import socket
 import sys
 import tempfile
+import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -127,21 +128,39 @@ def handle_internal_error(_err: Any) -> Any:
     return jsonify({"status": "error", "message": "Internal processing error."}), 500
 
 
+_CONNECTIVITY_TTL_SEC = 15.0
+_CONNECTIVITY_CACHE: Dict[str, Any] = {"ts": 0.0, "value": None}
+
+try:
+    _CACHED_CPU_BRAND: str = cpuinfo.get_cpu_info().get("brand_raw", platform.processor())
+except Exception:
+    _CACHED_CPU_BRAND = platform.processor()
+
+# Prime psutil non-blocking CPU percent baseline at startup
+psutil.cpu_percent(interval=None)
+
+
 def check_internet_connectivity() -> str:
     """Detect whether external internet is reachable or operating in Offline Air-Gapped Mode."""
+    now = time.monotonic()
+    if _CONNECTIVITY_CACHE["value"] is not None and (now - _CONNECTIVITY_CACHE["ts"]) < _CONNECTIVITY_TTL_SEC:
+        return str(_CONNECTIVITY_CACHE["value"])
     try:
         sock = socket.create_connection(("1.1.1.1", 53), timeout=0.5)
         sock.close()
-        return "ONLINE (Local Inference Active — Zero Automatic Remote Fetching)"
+        result = "ONLINE (Local Inference Active — Zero Automatic Remote Fetching)"
     except OSError:
-        return "OFFLINE AIR-GAPPED MODE (100% Local On-Device Execution)"
+        result = "OFFLINE AIR-GAPPED MODE (100% Local On-Device Execution)"
+    _CONNECTIVITY_CACHE["ts"] = now
+    _CONNECTIVITY_CACHE["value"] = result
+    return result
 
 
 def get_system_telemetry() -> Dict[str, Any]:
     """Gather genuine live hardware, memory, model, and ExecuTorch runtime status."""
     vm = psutil.virtual_memory()
     proc = psutil.Process()
-    cpu_brand = cpuinfo.get_cpu_info().get("brand_raw", platform.processor())
+    cpu_brand = _CACHED_CPU_BRAND
     active_advisor = calibrated_engine._llama_advisor or engine._llama_advisor
     if active_advisor is not None:
         pte_status = active_advisor.runtime.verify_pte_artifact()
@@ -175,7 +194,7 @@ def get_system_telemetry() -> Dict[str, Any]:
         "cpu_model": cpu_brand,
         "physical_cores": psutil.cpu_count(logical=False),
         "logical_cores": psutil.cpu_count(logical=True),
-        "cpu_percent": psutil.cpu_percent(interval=0.05),
+        "cpu_percent": psutil.cpu_percent(interval=None),
         "ram_total_gb": round(vm.total / (1024**3), 2),
         "ram_used_gb": round(vm.used / (1024**3), 2),
         "ram_available_gb": round(vm.available / (1024**3), 2),
