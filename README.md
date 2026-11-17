@@ -103,5 +103,5 @@ python scripts/run_application.py --host 127.0.0.1 --port 8501
 - **Known Limitations:** Meta Llama 3.2 (`meta-llama/Llama-3.2-1B-Instruct`, Meta Llama 3.2 Community License) + native ExecuTorch (`8da4w` XNNPACK) and physical ARM64 / PYNQ-Z2 execution remain **unverified** on this Windows host (see `deployment/linux/export_meta_llama_executorch.sh`). Evaluation datasets are synthetic/curated.
 - **Automated Test Suite:** `python -m unittest discover -s tests -p "test_*.py" -v` (`39` unit, integration, security, and E2E tests).
 - **Phase 3 Evaluation:** `python scripts/evaluation/run_phase3_hardening.py`
-- **Demo Walkthrough:** Follow [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md).
+- **Offline Demo Mode:** Open `6. Unified Intelligence & Demo` in the dashboard (`http://127.0.0.1:8501`) for 1-click synthetic scenarios (see [`docs/DEMO_SCENARIOS.md`](docs/DEMO_SCENARIOS.md)).
 - **Audit Reports:** [`docs/FINAL_SUBMISSION_READINESS_AUDIT.md`](docs/FINAL_SUBMISSION_READINESS_AUDIT.md), [`docs/PHASE5_FINAL_INTEGRATION_AUDIT.md`](docs/PHASE5_FINAL_INTEGRATION_AUDIT.md).
