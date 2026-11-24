@@ -1,0 +1,16 @@
+# SecureEdge AI — Lightweight ARM64 / Android Termux Dependencies (FAST TRIAGE)
+# Excludes torch, transformers, and plotting libraries so Termux can run all
+# hardened URL, SMS, Network, Incident Correlation, and Flask Dashboard features.
+
+scikit-learn>=1.5.0
+numpy>=1.26.0
+scipy>=1.13.0
+joblib>=1.4.0
+scapy>=2.5.0
+Flask>=3.0.0
+Jinja2>=3.1.0
+pydantic>=2.7.0
+psutil>=6.0.0
+py-cpuinfo>=9.0.0
+requests>=2.31.0
+urllib3>=2.2.0
