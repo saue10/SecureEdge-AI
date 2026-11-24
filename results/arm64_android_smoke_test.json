@@ -1,0 +1,34 @@
+{
+  "device": {
+    "machine": "aarch64",
+    "is_arm64": true,
+    "platform": "Linux-6.17.0-PRoot-Distro-aarch64-with-glibc2.43",
+    "python_version": "3.14.4",
+    "cpu_count": 8,
+    "ram_total_gb": 10.99,
+    "process_rss_mb": 211.97
+  },
+  "mode": "fast_triage (zero torch/LLM)",
+  "verdicts": {
+    "url_homograph": {
+      "state": "confirmed_malicious",
+      "risk_score": 99
+    },
+    "sms_hinglish": {
+      "state": "confirmed_malicious",
+      "risk_score": 65
+    },
+    "network_microservice_burst": {
+      "state": "normal",
+      "risk_score": 25
+    }
+  },
+  "latency_ms": {
+    "url_p50": 136.02,
+    "url_p95": 195.966,
+    "sms_p50": 7.356,
+    "sms_p95": 9.423,
+    "net_p50": 97.019,
+    "net_p95": 148.64
+  }
+}

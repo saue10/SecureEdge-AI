@@ -10,9 +10,10 @@
 **SecureEdge AI** is an offline-capable cybersecurity assistant that detects **phishing URLs**, **obfuscated/Hinglish scam SMS messages**, and **network traffic threats** locally on-device, correlates related observations into unified incidents, and exports redacted JSON/Markdown reports.
 
 > **Honest Hardware & Model Status:**
-> - **Verified on Host:** Windows 11, Intel Core i5-1135G7, ~8 GB RAM, Python `3.13.2`, CPU-only PyTorch `2.8.0+cpu`.
-> - **Comparison LLM:** Optional `DEEP ANALYSIS` runs **`HuggingFaceTB/SmolLM2-135M-Instruct`** (`134.5M` params, Apache-2.0, `LlamaForCausalLM`) via `torch.export.ExportedProgram`, with graceful deterministic fallback if unavailable.
-> - **Not Verified Here:** Official **`meta-llama/Llama-3.2-1B-Instruct`** (`8da4w` XNNPACK `.pte`, Meta Llama 3.2 Community License) and **physical ARM64 / PYNQ-Z2 deployment** are prepared in `deployment/` but **not executed** on this Windows x86_64 machine.
+> - **Verified on Windows Host:** Windows 11, Intel Core i5-1135G7, ~8 GB RAM, Python `3.13.2`, CPU-only PyTorch `2.8.0+cpu`.
+> - **Verified on Physical ARM64 Android (`aarch64`):** `FAST TRIAGE` (Hardened URL, SMS, and Context-Aware Network detectors) executed on an 8-core, 10.99 GB RAM Android smartphone (`Linux-6.17.0-PRoot-Distro-aarch64-with-glibc2.43`, Python `3.14.4`, `211.97 MB` RSS; see [`results/arm64_android_smoke_test.json`](results/arm64_android_smoke_test.json)).
+> - **Comparison LLM:** Optional `DEEP ANALYSIS` runs **`HuggingFaceTB/SmolLM2-135M-Instruct`** (`134.5M` params, Apache-2.0, `LlamaForCausalLM`) via `torch.export.ExportedProgram` on Windows, with graceful deterministic fallback if unavailable.
+> - **Not Verified Here:** Official **`meta-llama/Llama-3.2-1B-Instruct`** (`8da4w` XNNPACK `.pte`, Meta Llama 3.2 Community License) and native `executorch` execution on ARM64 / PYNQ-Z2 remain unverified.
 > - **Evaluation Scope:** All Phase 1–4 accuracy, FPR, and demo benchmarks use **synthetic or curated local datasets**, not real-world field telemetry.
 
 ---

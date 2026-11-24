@@ -64,7 +64,12 @@ End users and edge devices face growing exposure to phishing URLs (including IDN
 - **Automated Tests:** `python -m unittest discover -s tests -p "test_*.py" -v` -> **`39/39` PASS (`349.430 s`)**.
 
 ## 11. Current Hardware Status
-All verified metrics were measured on a **Windows 11 `x86_64` CPU-only laptop** (`Intel Core i5-1135G7`, ~8 GB RAM, Python `3.13.2`, PyTorch `2.8.0+cpu`). **Physical ARM64 and PYNQ-Z2 FPGA execution are NOT verified** on this host.
+- **Windows 11 `x86_64` Host:** `Intel Core i5-1135G7`, ~8 GB RAM, Python `3.13.2`, CPU-only PyTorch `2.8.0+cpu` (full 39-test suite + `SmolLM2-135M-Instruct` comparison static graph).
+- **Physical ARM64 Android Smartphone (`aarch64`, Verified `FAST TRIAGE`):** Executed `scripts/arm_smoke_test.py` in Termux PRoot-Distro Ubuntu (`Linux-6.17.0-PRoot-Distro-aarch64-with-glibc2.43`, 8 cores, `10.99 GB` RAM, Python `3.14.4`, `211.97 MB` RSS; `results/arm64_android_smoke_test.json`):
+  - **URL Homograph (`confirmed_malicious`, 99/100):** `P50 = 136.02 ms`, `P95 = 195.97 ms`
+  - **Hinglish Scam SMS (`confirmed_malicious`, 65/100):** `P50 = 7.36 ms`, `P95 = 9.42 ms`
+  - **Microservice Burst (`normal`, 25/100):** `P50 = 97.02 ms`, `P95 = 148.64 ms`
+- **Not Verified:** Native `executorch` runtime on ARM64, Raspberry Pi 5, and PYNQ-Z2 FPGA execution remain **unverified**.
 
 ## 12. Meta Llama / ExecuTorch Compliance Status
 - **Working Local Model:** `HuggingFaceTB/SmolLM2-135M-Instruct` (`134.5M` params, Apache-2.0, `LlamaForCausalLM`) via `torch.export.ExportedProgram`.
