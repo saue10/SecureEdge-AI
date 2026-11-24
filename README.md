@@ -95,7 +95,7 @@ python scripts/run_application.py --host 127.0.0.1 --port 8501
 - [Model Comparison (F1 / AUC)](demo/screenshots/model_comparison_f1_auc.png)
 - [Pipeline Latency Breakdown](demo/screenshots/pipeline_latency_breakdown.png)
 - [Confusion Matrices](demo/screenshots/confusion_matrices.png)
-- [Dashboard: Security Overview](docs/submission/screenshots/01_security_overview.png) | [URL Scanner](docs/submission/screenshots/02_url_threat_scanner.png) | [SMS Analyzer](docs/submission/screenshots/03_sms_scam_analyzer.png) | [Network Analyzer](docs/submission/screenshots/04_network_analyzer.png) | [Incident History](docs/submission/screenshots/05_incident_history.png) | [Incident Detail & Export](docs/submission/screenshots/06_incident_detail_export.png)
+- [Dashboard: Security Overview](docs/submission/screenshots/01_security_overview.png) | [URL Scanner](docs/submission/screenshots/02_url_threat_scanner.png) | [SMS Analyzer](docs/submission/screenshots/03_sms_scam_analyzer.png) | [Network Analyzer](docs/submission/screenshots/04_network_analyzer.png) | [Incident History](docs/submission/screenshots/05_incident_history.png) | [Incident Detail & Export](docs/submission/screenshots/06_incident_detail_export.png) | [Android ARM64 Offline Status (Cortex-A520)](docs/submission/screenshots/07_android_arm64_offline_status.jpg)
 
 ---
 
